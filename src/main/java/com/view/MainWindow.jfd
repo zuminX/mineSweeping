@@ -1,0 +1,309 @@
+JFDML JFormDesigner: "7.0.0.6.255" Java: "11.0.4" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "this"
+			"title": "MineSweeping"
+			"$sizePolicy": 1
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.CardLayout ) ) {
+				name: "mainPanel"
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+					name: "gamePanel"
+					"background": new java.awt.Color( 204, 204, 204, 255 )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+						"$horizontalGroup": "par l {seq l {space ::36:x, comp remainingMineNumberLabel:::p::p, space ::116:x, comp reloadLabel:::p::p, space ::111:x, comp timeLabel:::p::p, space ::44:x}}"
+						"$verticalGroup": "par l {seq l {par b {comp remainingMineNumberLabel::b:::x, comp timeLabel::b:::x, comp reloadLabel::b:::x}, space :0:0:x}}"
+					} ) {
+						name: "panel3"
+						"background": new java.awt.Color( 204, 204, 204, 255 )
+						"border": new javax.swing.border.BevelBorder( 1, null, null, null, null )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "remainingMineNumberLabel"
+							"border": new javax.swing.border.LineBorder( sfield java.awt.Color black, 1, false )
+							"background": new java.awt.Color( 0, 0, 0, 255 )
+							"text": "000"
+							"font": new java.awt.Font( "黑体", 1, 18 )
+							"foreground": sfield java.awt.Color red
+							"opaque": true
+							"horizontalAlignment": 0
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "reloadLabel"
+							"text": "text"
+							"maximumSize": new java.awt.Dimension( 25, 25 )
+							"minimumSize": new java.awt.Dimension( 25, 25 )
+							"preferredSize": new java.awt.Dimension( 25, 25 )
+							"icon": new com.jformdesigner.model.SwingIcon( 0, "/image/confused.png" )
+							"border": new javax.swing.border.MatteBorder( 1, 1, 1, 1, sfield java.awt.Color black )
+							addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "reloadLabelMouseClicked", true ) )
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "timeLabel"
+							"text": "000"
+							"font": new java.awt.Font( "黑体", 1, 18 )
+							"border": new javax.swing.border.LineBorder( sfield java.awt.Color black, 1, false )
+							"foreground": sfield java.awt.Color red
+							"opaque": true
+							"background": new java.awt.Color( 0, 0, 0, 255 )
+							"horizontalAlignment": 0
+						} )
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "North"
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) ) {
+						name: "buttonsPanel"
+						"border": sfield com.jgoodies.forms.factories.Borders TABBED_DIALOG_BORDER
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "Center"
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "card3"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
+					"$columnSpecs": "0:1.0"
+					"$rowSpecs": "0, 0:1.0"
+					"$hGap": 5
+					"$vGap": 5
+					"$alignTop": true
+					"$alignLeft": true
+				} ) {
+					name: "settingPanel"
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
+						"$columnSpecs": "90, center:63, 0:1.0"
+						"$rowSpecs": "0, 0, 0, 0"
+						"$hGap": 5
+						"$vGap": 5
+						"$alignLeft": true
+						"$alignTop": true
+					} ) {
+						name: "panel6"
+						"border": new javax.swing.border.CompoundBorder( new javax.swing.border.TitledBorder( "游戏设置" ), sfield com.jgoodies.forms.factories.Borders DLU2_BORDER )
+						add( new FormComponent( "javax.swing.JRadioButtonMenuItem" ) {
+							name: "easyModelButton"
+							"text": "简单"
+							"$buttonGroup": new FormReference( "buttonGroup1" )
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "changeModelActionPerformed", true ) )
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label4"
+							"text": "行数："
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+							"gridx": 1
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "rowTextField"
+							"text": "text"
+							"enabled": false
+							addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "rowTextFieldFocusLost", true ) )
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+							"gridx": 2
+						} )
+						add( new FormComponent( "javax.swing.JRadioButtonMenuItem" ) {
+							name: "ordinaryModelButton"
+							"text": "普通"
+							"$buttonGroup": new FormReference( "buttonGroup1" )
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "changeModelActionPerformed", true ) )
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+							"gridy": 1
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label5"
+							"text": "列数："
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+							"gridx": 1
+							"gridy": 1
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "columnTextField"
+							"text": "text"
+							"enabled": false
+							addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "columnTextFieldFocusLost", true ) )
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+							"gridx": 2
+							"gridy": 1
+						} )
+						add( new FormComponent( "javax.swing.JRadioButtonMenuItem" ) {
+							name: "hardModelButton"
+							"text": "困难"
+							"$buttonGroup": &FormReference0 new FormReference( "buttonGroup1" )
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "changeModelActionPerformed", true ) )
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+							"gridy": 2
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label6"
+							"text": "地雷个数："
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+							"gridx": 1
+							"gridy": 2
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "mineNumberTextField"
+							"text": "text"
+							"enabled": false
+							addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "mineNumberTextFieldFocusLost", true ) )
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+							"gridx": 2
+							"gridy": 2
+						} )
+						add( new FormComponent( "javax.swing.JRadioButtonMenuItem" ) {
+							name: "customizeModelButton"
+							"text": "自定义"
+							"$buttonGroup": #FormReference0
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "changeModelActionPerformed", true ) )
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+							"gridy": 3
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label10"
+							"text": "地雷密度："
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+							"gridx": 1
+							"gridy": 3
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "mineDensityTextField"
+							"text": "text"
+							"enabled": false
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+							"gridx": 2
+							"gridy": 3
+						} )
+					}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
+						"$columnSpecs": "61, 0:1.0"
+						"$rowSpecs": "0, 0"
+						"$hGap": 5
+						"$vGap": 5
+						"$alignLeft": true
+						"$alignTop": true
+					} ) {
+						name: "panel7"
+						"border": new javax.swing.border.CompoundBorder( new javax.swing.border.TitledBorder( "其他设置" ), sfield com.jgoodies.forms.factories.Borders DLU2_BORDER )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label1"
+							"text": "游戏名："
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "gameNameField"
+							addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "changeGameNameFocusLost", true ) )
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+							"gridx": 1
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label2"
+							"text": "开启记录："
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+							"gridy": 1
+						} )
+						add( new FormComponent( "javax.swing.JCheckBox" ) {
+							name: "openRecordCheckBox"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "openRecordActionPerformed", true ) )
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+							"gridx": 1
+							"gridy": 1
+						} )
+					}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+						"gridy": 1
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "card2"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
+					"$columnSpecs": "0:1.0"
+					"$rowSpecs": "0, 0:1.0"
+					"$hGap": 5
+					"$vGap": 5
+					"$alignTop": true
+					"$alignLeft": true
+				} ) {
+					name: "helpPanel"
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
+						"$columnSpecs": "90:1.0"
+						"$rowSpecs": "0, 0, 0, 0"
+						"$hGap": 5
+						"$vGap": 5
+						"$alignLeft": true
+						"$alignTop": true
+					} ) {
+						name: "panel8"
+						"border": new javax.swing.border.CompoundBorder( new javax.swing.border.TitledBorder( "游戏" ), sfield com.jgoodies.forms.factories.Borders DLU2_BORDER )
+					}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
+						"$columnSpecs": "0:1.0"
+						"$rowSpecs": "0, 0, 0"
+						"$hGap": 5
+						"$vGap": 5
+						"$alignLeft": true
+						"$alignTop": true
+					} ) {
+						name: "panel9"
+						"border": new javax.swing.border.CompoundBorder( new javax.swing.border.TitledBorder( "设置" ), sfield com.jgoodies.forms.factories.Borders DLU2_BORDER )
+					}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+						"gridy": 1
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "card4"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+			menuBar: new FormContainer( "javax.swing.JMenuBar", new FormLayoutManager( class javax.swing.JMenuBar ) ) {
+				name: "menuBar1"
+				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
+					name: "menu1"
+					"text": " 游戏"
+					"font": new java.awt.Font( "Microsoft YaHei UI", 1, 16 )
+					"maximumSize": new java.awt.Dimension( 55, 32767 )
+					"minimumSize": new java.awt.Dimension( 50, 27 )
+					"preferredSize": new java.awt.Dimension( 53, 27 )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "menuItem1"
+						"text": " 开始"
+						"horizontalAlignment": 2
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "showGameActionPerformed", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JPopupMenu$Separator" ) {
+						name: "separator1"
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "menuItem2"
+						"text": " 设置"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "changeSettingActionPerformed", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JPopupMenu$Separator" ) {
+						name: "separator2"
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "menuItem4"
+						"text": " 加载"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "loadActionPerformed", true ) )
+					} )
+				} )
+				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
+					name: "menu2"
+					"text": " 帮助"
+					"font": new java.awt.Font( "Microsoft YaHei UI", 1, 16 )
+					"maximumSize": new java.awt.Dimension( 55, 32767 )
+					"minimumSize": new java.awt.Dimension( 50, 27 )
+					"preferredSize": new java.awt.Dimension( 53, 27 )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "menuItem3"
+						"text": "  查看"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "showHelpActionPerformed", true ) )
+					} )
+				} )
+			}
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 5 )
+			"size": new java.awt.Dimension( 400, 355 )
+		} )
+		add( new FormNonVisual( "javax.swing.ButtonGroup" ) {
+			name: "buttonGroup1"
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 376 )
+		} )
+	}
+}
