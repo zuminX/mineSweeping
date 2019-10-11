@@ -20,9 +20,9 @@ public class Mine {
             LoggerFactory.getLogger(Mine.class).error("", e);
             return null;
         }
-        final Integer row = Integer.valueOf(properties.getProperty(modelName + ".row"));
-        final Integer column = Integer.valueOf(properties.getProperty(modelName + ".column"));
-        final Integer mineNumber = Integer.valueOf(properties.getProperty(modelName + ".mineNumber"));
+        final int row = Integer.parseInt(properties.getProperty(modelName + ".row"));
+        final int column = Integer.parseInt(properties.getProperty(modelName + ".column"));
+        final int mineNumber = Integer.parseInt(properties.getProperty(modelName + ".mineNumber"));
         return new Integer[]{row, column, mineNumber};
     }
 

@@ -17,7 +17,6 @@ public class GameNowStatus {
     }
 
     public void setInitStatus() {
-        startTime = System.currentTimeMillis();
         isFail = false;
         openSpace = 0;
     }

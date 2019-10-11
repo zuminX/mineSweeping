@@ -10,6 +10,7 @@ import com.domain.GameNowStatus;
 import com.domain.MineJButton;
 import com.domain.MineModel;
 import com.domain.GameNowData;
+import net.miginfocom.swing.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,35 +35,14 @@ public class MainWindow extends JFrame {
 
     private GameNowData gameNowData;
 
-    @Autowired
-    private ButtonMouseProcessor mouseListener;
-
     public MainWindow() {
         initComponents();
-        //开启间隔5s的定时任务
-        new Timer(5000, new TimerListener()).start();
-    }
-
-    /**
-     * 定时任务监听器
-     */
-    private class TimerListener implements ActionListener {
-
-        /**
-         * 进行预加载
-         *
-         * @param e 事件
-         */
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            mineController.preloadMineData();
-        }
     }
 
     private void showGameActionPerformed(ActionEvent e) {
         // 写入自定义的数据
         if (tempCustomizeData != null) {
-            if (!mineController.updateCustomizeData(tempCustomizeData)) {
+            if (mineController.updateCustomizeData(tempCustomizeData)) {
                 return;
             }
         }
@@ -120,6 +100,7 @@ public class MainWindow extends JFrame {
         }
     }
 
+    //TODO 多次点击 游戏结束bug
     private void loadActionPerformed(ActionEvent e) {
         // 加载数据
         //扫雷面板初始化
@@ -130,7 +111,7 @@ public class MainWindow extends JFrame {
 
         //创建扫雷按钮组并增加监听器添加到面板中
         gameNowData = mineController.newMineViewButtons();
-        addButtonsToPanel();
+        mineController.addButtonsToPanel(gameNowData.getButtons(), buttonsPanel);
 
         //绘制扫雷按钮组面板
         buttonsPanel.updateUI();
@@ -148,43 +129,13 @@ public class MainWindow extends JFrame {
     private void cleanGameData() {
         GameNowStatus nowStatus = gameNowData.getNowStatus();
 
-        removeButtonsListener();
+        mineController.removeButtonsListener(gameNowData.getButtons());
 
         mineController.showDynamicTime(timeLabel, nowStatus);
         mineController.initRemainingMineNumberLabel(remainingMineNumberLabel);
         nowStatus.setInitStatus();
 
-        addButtonsMouseListener();
-    }
-
-    /**
-     * 添加扫雷按钮组到扫雷面板中
-     */
-    private void addButtonsToPanel() {
-        JButton[][] buttons = gameNowData.getButtons();
-        for (JButton[] button : buttons) {
-            for (JButton b : button) {
-                buttonsPanel.add(b);
-            }
-        }
-    }
-
-    private void addButtonsMouseListener() {
-        final MineJButton[][] buttons = gameNowData.getButtons();
-
-        for (JButton[] button : buttons) {
-            for (JButton b : button) {
-                b.addMouseListener(mouseListener);
-            }
-        }
-    }
-
-    private void removeButtonsListener() {
-        for (JButton[] button : gameNowData.getButtons()) {
-            for (JButton b : button) {
-                b.removeAll();
-            }
-        }
+        mineController.addButtonsMouseListener(gameNowData.getButtons());
     }
 
     private void changeGameNameFocusLost(FocusEvent e) {
@@ -195,8 +146,8 @@ public class MainWindow extends JFrame {
         mineController.changeOpenRecordStatus();
     }
 
-    @Component
-    private class ButtonMouseProcessor extends MouseAdapter {
+    @Component("mouseListener")
+    public class ButtonMouseProcessor extends MouseAdapter {
 
         @Override
         public void mouseClicked(MouseEvent e) {
@@ -205,7 +156,7 @@ public class MainWindow extends JFrame {
             if(e.getButton() == MouseEvent.BUTTON1)
             {
                 if (mineController.openSpace(button, gameNowData)) {
-                    removeButtonsListener();
+                    mineController.removeButtonsListener(gameNowData.getButtons());
                 }
             }
             //右键为设置旗帜

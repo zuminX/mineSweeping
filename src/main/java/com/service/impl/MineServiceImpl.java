@@ -2,9 +2,10 @@ package com.service.impl;
 
 import com.dao.MineDao;
 import com.domain.*;
+import com.service.MineService;
+import com.utils.Information;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.service.MineService;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -25,9 +26,13 @@ public class MineServiceImpl implements MineService {
 
     private Queue<MineData> minePreloadData = new ConcurrentLinkedQueue<>();
 
+    public MineServiceImpl() {
+        new Thread(new Preload()).start();
+    }
+
     @Override
-    public String changeModel(JTextField rowTextField, JTextField columnTextField, JTextField mineNumberTextField, JTextField mineDensityTextField,
-                              String modelName) {
+    public boolean changeModel(JTextField rowTextField, JTextField columnTextField, JTextField mineNumberTextField, JTextField mineDensityTextField,
+                               String modelName) {
         MineModel model = null;
         switch (modelName) {
             case "简单":
@@ -44,10 +49,10 @@ public class MineServiceImpl implements MineService {
                 break;
         }
         if (model == null) {
-            return "加载配置扫雷游戏模式设置时失败";
+            throw new RuntimeException(Information.loadGameModelError);
         }
         mine.setNowMineModel(model);
-        return null;
+        return false;
     }
 
     @Override
@@ -56,23 +61,23 @@ public class MineServiceImpl implements MineService {
     }
 
     @Override
-    public String updateCustomizeData(String[] customizeData) {
-        final MineModel customizeModelByData;
+    public boolean updateCustomizeData(String[] customizeData) {
+        MineModel customizeModelByData;
         try {
             customizeModelByData = mineDao.findCustomizeModelByData(customizeData[0], customizeData[1], customizeData[2]);
         } catch (IOException e) {
-            throw new RuntimeException("");
+            throw new RuntimeException(Information.loadGameBasicSettingError);
         }
         if (customizeModelByData == null) {
-            return "自定义扫雷数据失败，请检查数据的合法性";
+            throw new RuntimeException(Information.changeCustomizeDataError);
         }
         mine.setCustomizeModel(customizeModelByData);
         try {
             mineDao.updateCustomizeModelInProperties(customizeModelByData);
         } catch (IOException e) {
-            throw new RuntimeException("");
+            throw new RuntimeException(Information.loadGameBasicSettingError);
         }
-        return null;
+        return false;
     }
 
     @Override
@@ -114,29 +119,26 @@ public class MineServiceImpl implements MineService {
     }
 
     @Override
-    public void preloadMineData() {
-        new Thread(preload).start();
-    }
-
-    @Override
-    public void changeGameName(String name) {
+    public boolean changeGameName(String name) {
         if (name.trim().equals("")) {
-            throw new RuntimeException("");
+            throw new RuntimeException(Information.playerNameNotNull);
         }
         try {
             mineDao.changeGameName(name);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(Information.loadPlayerDataSettingError);
         }
+        return false;
     }
 
     @Override
-    public void changeOpenRecordStatus() {
+    public boolean changeOpenRecordStatus() {
         try {
             mineDao.changeOpenRecordStatus();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(Information.loadPlayerDataSettingError);
         }
+        return false;
     }
 
     private HashSet<Point> createMineData() {
@@ -201,14 +203,19 @@ public class MineServiceImpl implements MineService {
 
         @Override
         public void run() {
-            synchronized (MineServiceImpl.class) {
-                final MineModel nowMineModel = getNowMineModel();
-                if (!nowMineModel.equals(oldMineModel)) {
-                    minePreloadData = new ConcurrentLinkedQueue<>();
-                    oldMineModel = nowMineModel;
-                }
-                while (minePreloadData.size() < 10) {
-                    minePreloadData.offer(newMineData());
+            while (true) {
+                try {
+                    final MineModel nowMineModel = getNowMineModel();
+                    if (!nowMineModel.equals(oldMineModel)) {
+                        minePreloadData = new ConcurrentLinkedQueue<>();
+                        oldMineModel = nowMineModel;
+                    }
+                    while (minePreloadData.size() < 10) {
+                        minePreloadData.offer(newMineData());
+                    }
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(Information.loadGameDataError);
                 }
             }
         }

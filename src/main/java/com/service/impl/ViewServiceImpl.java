@@ -4,17 +4,17 @@ import com.dao.MineDao;
 import com.domain.Point;
 import com.domain.*;
 import com.service.ViewService;
+import com.utils.BaseHolder;
 import com.utils.ButtonImage;
+import com.utils.GameOverDialog;
 import com.view.MainWindow;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.FileInputStream;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 
 @Service("viewService")
@@ -27,11 +27,7 @@ public class ViewServiceImpl implements ViewService {
 
     @Override
     public void setModelEnabled(MineModel model, JTextField rowTextField, JTextField columnTextField, JTextField mineNumberTextField) {
-        if (model.getName().equals("自定义")) {
-            setEnabled(true, rowTextField, columnTextField, mineNumberTextField);
-        } else {
-            setEnabled(false, rowTextField, columnTextField, mineNumberTextField);
-        }
+        setEnabled(model.getName().equals("自定义"), rowTextField, columnTextField, mineNumberTextField);
     }
 
     @Override
@@ -80,8 +76,8 @@ public class ViewServiceImpl implements ViewService {
 
     @Override
     public void setWindowSize(MineModel nowMineModel, MainWindow mainWindow, Dimension screenSize) {
-        int width = Math.min(nowMineModel.getColumn() * 40, (int) (screenSize.getWidth() / 1.5));
-        int height = Math.min(nowMineModel.getRow() * 40, (int) (screenSize.getHeight() / 1.5));
+        int width = Math.min(nowMineModel.getColumn() * 35, (int) (screenSize.getWidth() / 1.5));
+        int height = Math.min(nowMineModel.getRow() * 35, (int) (screenSize.getHeight() / 1.5));
         mainWindow.setSize(width, height);
     }
 
@@ -106,13 +102,16 @@ public class ViewServiceImpl implements ViewService {
 
     @Override
     public boolean openSpace(MineJButton button, GameNowData gameNowData) {
+        if (button.isFlag()) {
+            return false;
+        }
+
         final int data = button.getData();
         final GameNowStatus nowStatus = gameNowData.getNowStatus();
 
         if (button.getStatus() == MineJButton.MINE) {
             nowStatus.setFail(true);
             button.setStatus(MineJButton.EXPLODE);
-            loadRemainderButtonsIcon(gameNowData);
             return true;
         }
 
@@ -121,23 +120,25 @@ public class ViewServiceImpl implements ViewService {
         if (data == 0) {
             openAroundSpace(button, gameNowData);
         } else {
-            button.setIcon(ButtonImage.getGameImageIcon(ButtonImage.numberBufferedImage[data-1], button));
+            button.setIcon(ButtonImage.getGameImageIcon(ButtonImage.numberBufferedImage[data - 1], button));
         }
+
+        removeButtonListener(button);
 
         return false;
     }
 
     @Override
     public String setFlag(MineJButton button, JLabel remainingMineNumberLabel) {
-        if (button.getIcon() != null) {
+        if (button.isFlag()) {
             button.setIcon(null);
             remainingMineNumberLabel.setText((Integer.parseInt(remainingMineNumberLabel.getText()) + 1) + "");
+            button.setFlag(false);
         } else {
             button.setIcon(ButtonImage.getGameImageIcon(ButtonImage.flagBufferedImage, button));
             remainingMineNumberLabel.setText((Integer.parseInt(remainingMineNumberLabel.getText()) - 1) + "");
+            button.setFlag(true);
         }
-
-        button.setFlag(true);
         return null;
     }
 
@@ -185,6 +186,65 @@ public class ViewServiceImpl implements ViewService {
         openRecordCheckBox.setSelected(nowOpenRecordStatus);
     }
 
+    @Override
+    public void showGameOverDialog(GameOverDialogData data) {
+        if (data == null) {
+            return;
+        }
+
+        GameOverDialog gameOverDialog = new GameOverDialog();
+        StringBuilder title = new StringBuilder(16);
+        if (data.isWin()) {
+            title.append("你赢了！");
+            if (data.isBreakRecord()) {
+                title.append("（你打破了你的记录）");
+            }
+        } else {
+            title.append("你输了！");
+        }
+        gameOverDialog.setTitle(title.toString());
+
+        gameOverDialog.initShowData(data);
+
+        gameOverDialog.setVisible(true);
+    }
+
+    /**
+     * 添加扫雷按钮组到扫雷面板中
+     */
+    @Override
+    public void addButtonsToPanel(MineJButton[][] buttons, JPanel buttonsPanel) {
+        for (JButton[] button : buttons) {
+            for (JButton b : button) {
+                buttonsPanel.add(b);
+            }
+        }
+    }
+
+    @Override
+    public void addButtonsMouseListener(MineJButton[][] buttons) {
+        MouseListener listener = BaseHolder.getBean("mouseListener");
+        for (JButton[] button : buttons) {
+            for (JButton b : button) {
+                b.addMouseListener(listener);
+            }
+        }
+    }
+
+    @Override
+    public void removeButtonsListener(MineJButton[][] buttons) {
+        MouseListener listener = BaseHolder.getBean("mouseListener");
+        for (JButton[] button : buttons) {
+            for (JButton b : button) {
+                b.removeMouseListener(listener);
+            }
+        }
+    }
+
+    private void removeButtonListener(MineJButton button) {
+        button.removeMouseListener(BaseHolder.getBean("mouseListener"));
+    }
+
     private void setButtonDisPlayStatus(MineJButton button) {
         button.setBackground(Color.WHITE);
         button.setStatus(MineJButton.DISPLAY_SPACE);
@@ -206,12 +266,14 @@ public class ViewServiceImpl implements ViewService {
                 MineJButton mineJButton = mineViewButtons[i][j];
                 int data = mineJButton.getData();
                 if (mineJButton.getStatus() != MineJButton.DISPLAY_SPACE) {
+                    setButtonDisPlayStatus(mineJButton);
+
+                    removeButtonListener(mineJButton);
+
                     if (data == 0) {
-                        setButtonDisPlayStatus(mineJButton);
                         openAroundSpace(mineJButton, gameNowData);
                     } else {
-                        setButtonDisPlayStatus(mineJButton);
-                        mineJButton.setIcon(ButtonImage.getGameImageIcon(ButtonImage.numberBufferedImage[data-1], mineJButton));
+                        mineJButton.setIcon(ButtonImage.getGameImageIcon(ButtonImage.numberBufferedImage[data - 1], mineJButton));
                     }
                     gameNowData.getNowStatus().setOpenSpace(gameNowData.getNowStatus().getOpenSpace() + 1);
                 }
@@ -219,7 +281,7 @@ public class ViewServiceImpl implements ViewService {
         }
     }
 
-    private class DynamicTime implements Runnable {
+    private static class DynamicTime implements Runnable {
         private JLabel timeLabel;
         private int time;
         private GameNowStatus gameNowStatus;
@@ -243,7 +305,6 @@ public class ViewServiceImpl implements ViewService {
                     try {
                         //判断是否被中断
                         if (gameNowStatus.isWin() || gameNowStatus.isFail()) {
-                            gameNowStatus.setEndTime(System.currentTimeMillis());
                             flag = true;
                             while (flag) {
                                 Thread.sleep(1000);

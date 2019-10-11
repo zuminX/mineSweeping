@@ -1,10 +1,7 @@
 package com.controller.impl;
 
 import com.controller.MineController;
-import com.domain.GameNowData;
-import com.domain.GameNowStatus;
-import com.domain.MineJButton;
-import com.domain.MineModel;
+import com.domain.*;
 import com.service.MineService;
 import com.service.MineSweepingGameDataService;
 import com.service.ViewService;
@@ -27,15 +24,14 @@ public class MineControllerImpl implements MineController {
     @Override
     public boolean changeModel(JTextField rowTextField, JTextField columnTextField, JTextField mineNumberTextField, JTextField mineDensityTextField,
                                String modelName) {
-        final String err = mineService.changeModel(rowTextField, columnTextField, mineNumberTextField, mineDensityTextField, modelName);
-        if (err != null) {
-            viewService.showErrorInformation(err);
-            return false;
+        final boolean err = mineService.changeModel(rowTextField, columnTextField, mineNumberTextField, mineDensityTextField, modelName);
+        if (err) {
+            return true;
         }
         final MineModel nowMineModel = mineService.getNowMineModel();
         viewService.setModelEnabled(nowMineModel, rowTextField, columnTextField, mineNumberTextField);
         viewService.setModelDataText(nowMineModel, rowTextField, columnTextField, mineNumberTextField, mineDensityTextField);
-        return true;
+        return false;
     }
 
     @Override
@@ -43,9 +39,7 @@ public class MineControllerImpl implements MineController {
                                    JRadioButtonMenuItem hardModelButton, JRadioButtonMenuItem customizeModelButton, JTextField rowTextField,
                                    JTextField columnTextField, JTextField mineNumberTextField, JTextField mineDensityTextField) {
         viewService.setDefaultModel(mineService.getNowMineModel(), easyModelButton, ordinaryModelButton, hardModelButton, customizeModelButton);
-        final boolean err = changeModel(rowTextField, columnTextField, mineNumberTextField, mineDensityTextField,
-                mineService.getNowMineModel().getName());
-        return !err;
+        return changeModel(rowTextField, columnTextField, mineNumberTextField, mineDensityTextField, mineService.getNowMineModel().getName());
     }
 
     @Override
@@ -55,12 +49,7 @@ public class MineControllerImpl implements MineController {
 
     @Override
     public boolean updateCustomizeData(String[] customizeData) {
-        final String err = mineService.updateCustomizeData(customizeData);
-        if (err != null) {
-            viewService.showErrorInformation(err);
-            return false;
-        }
-        return true;
+        return mineService.updateCustomizeData(customizeData);
     }
 
     @Override
@@ -74,35 +63,22 @@ public class MineControllerImpl implements MineController {
     }
 
     @Override
-    public void preloadMineData() {
-        mineService.preloadMineData();
-    }
-
-    @Override
-    public void loadRemainderButtonsIcon(GameNowData gameNowData) {
-        final String err = viewService.loadRemainderButtonsIcon(gameNowData);
-        if (err != null) {
-            viewService.showErrorInformation(err);
-        }
-    }
-
-    @Override
     public boolean openSpace(MineJButton button, GameNowData gameNowData) {
-        //选择合适地图
-        if (gameNowData.getNowStatus().getOpenSpace() == 0) {
+        //选择合适地图，规避第一步就是雷
+        GameNowStatus nowStatus = gameNowData.getNowStatus();
+        if (nowStatus.getOpenSpace() == 0) {
             mineService.fillMineData(button.getPoint(), gameNowData);
+            nowStatus.setStartTime(System.currentTimeMillis());
         }
-        if (viewService.openSpace(button, gameNowData)) {
-            viewService.showInformation("你踩到地雷了！");
-            mineSweepingGameDataService.insert(gameNowData, mineService.getNowMineModel());
+        if (viewService.openSpace(button, gameNowData) || nowStatus.isWin()) {
+            nowStatus.setEndTime(System.currentTimeMillis());
+
+            viewService.loadRemainderButtonsIcon(gameNowData);
+            MineSweepingGameData gameData = mineSweepingGameDataService.insert(gameNowData, mineService.getNowMineModel());
+            GameOverDialogData data = mineSweepingGameDataService.findGameOverData(gameData);
+
+            viewService.showGameOverDialog(data);
             return true;
-        } else {
-            if (gameNowData.getNowStatus().isWin()) {
-                viewService.showInformation("你赢了！");
-                viewService.loadRemainderButtonsIcon(gameNowData);
-                mineSweepingGameDataService.insert(gameNowData, mineService.getNowMineModel());
-                return true;
-            }
         }
         return false;
     }
@@ -144,6 +120,21 @@ public class MineControllerImpl implements MineController {
     @Override
     public void changeOpenRecordStatus() {
         mineService.changeOpenRecordStatus();
+    }
+
+    @Override
+    public void addButtonsToPanel(MineJButton[][] buttons, JPanel buttonsPanel) {
+        viewService.addButtonsToPanel(buttons, buttonsPanel);
+    }
+
+    @Override
+    public void addButtonsMouseListener(MineJButton[][] buttons) {
+        viewService.addButtonsMouseListener(buttons);
+    }
+
+    @Override
+    public void removeButtonsListener(MineJButton[][] buttons) {
+        viewService.removeButtonsListener(buttons);
     }
 
 }

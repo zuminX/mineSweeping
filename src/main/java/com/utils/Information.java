@@ -10,88 +10,46 @@ import org.springframework.stereotype.Component;
 @Component
 @PropertySource(value = "classpath:properties/information.properties", encoding = "utf-8")
 public class Information {
-    public static String mazeHelpInformation;
-    public static String missingStartAndEndPoints;
-    public static String canTGetOut;
-    public static String readingMazeFileError;
-    public static String mazeFileIsEmpty;
-    public static String mazeSizeError;
-    public static String mazeDataError;
-    public static String missingMazeData;
-    public static String StartAndEndPointsOnlyOne;
-    public static String showPathError;
-    public static String selectMazeFile;
-    public static String selectMazeFileNoMatch;
-    public static String openMazeFileError;
-    public static String loadingImageError;
+    public static String loadGameModelError;
+    public static String loadGameBasicSettingError;
+    public static String changeCustomizeDataError;
+    public static String playerNameNotNull;
+    public static String loadPlayerDataSettingError;
+    public static String loadGameDataError;
+    public static String playerDataError;
 
-    @Value("${information.help}")
-    public void setMazeHelpInformation(String mazeHelpInformation) {
-        Information.mazeHelpInformation = mazeHelpInformation;
+    @Value("${information.loadGameModelError}")
+    public void setLoadGameModelError(String loadGameModelError) {
+        Information.loadGameModelError = loadGameModelError;
     }
 
-    @Value("${information.missingStartAndEndPoints}")
-    public void setMissingStartAndEndPoints(String missingStartAndEndPoints) {
-        Information.missingStartAndEndPoints = missingStartAndEndPoints;
+    @Value("${information.loadGameBasicSettingError}")
+    public void setLoadGameBasicSettingError(String loadGameBasicSettingError) {
+        Information.loadGameBasicSettingError = loadGameBasicSettingError;
     }
 
-    @Value("${information.canTGetOut}")
-    public void setCanTGetOut(String canTGetOut) {
-        Information.canTGetOut = canTGetOut;
+    @Value("${information.changeCustomizeDataError}")
+    public void setChangeCustomizeDataError(String changeCustomizeDataError) {
+        Information.changeCustomizeDataError = changeCustomizeDataError;
     }
 
-    @Value("${information.readingMazeFileError}")
-    public void setReadingMazeFileError(String readingMazeFileError) {
-        Information.readingMazeFileError = readingMazeFileError;
+    @Value("${information.playerNameNotNull}")
+    public void setPlayerNameNotNull(String playerNameNotNull) {
+        Information.playerNameNotNull = playerNameNotNull;
     }
 
-    @Value("${information.mazeFileIsEmpty}")
-    public void setMazeFileIsEmpty(String mazeFileIsEmpty) {
-        Information.mazeFileIsEmpty = mazeFileIsEmpty;
+    @Value("${information.loadPlayerDataSettingError}")
+    public void setLoadPlayerDataSettingError(String loadPlayerDataSettingError) {
+        Information.loadPlayerDataSettingError = loadPlayerDataSettingError;
     }
 
-    @Value("${information.mazeSizeError}")
-    public void setMazeSizeError(String mazeSizeError) {
-        Information.mazeSizeError = mazeSizeError;
+    @Value("${information.loadGameDataError}")
+    public void setLoadGameDataError(String loadGameDataError) {
+        Information.loadGameDataError = loadGameDataError;
     }
 
-    @Value("${information.mazeDataError}")
-    public void setMazeDataError(String mazeDataError) {
-        Information.mazeDataError = mazeDataError;
-    }
-
-    @Value("${information.missingMazeData}")
-    public void setMissingMazeData(String missingMazeData) {
-        Information.missingMazeData = missingMazeData;
-    }
-
-    @Value("${information.StartAndEndPointsOnlyOne}")
-    public void setStartAndEndPointsOnlyOne(String startAndEndPointsOnlyOne) {
-        StartAndEndPointsOnlyOne = startAndEndPointsOnlyOne;
-    }
-
-    @Value("${information.showPathError}")
-    public void setShowPathError(String showPathError) {
-        Information.showPathError = showPathError;
-    }
-
-    @Value("${information.selectMazeFile}")
-    public void setSelectMazeFile(String selectMazeFile) {
-        Information.selectMazeFile = selectMazeFile;
-    }
-
-    @Value("${information.selectMazeFileNoMatch}")
-    public void setSelectMazeFileNoMatch(String selectMazeFileNoMatch) {
-        Information.selectMazeFileNoMatch = selectMazeFileNoMatch;
-    }
-
-    @Value("${information.openMazeFileError}")
-    public void setOpenMazeFileError(String openMazeFileError) {
-        Information.openMazeFileError = openMazeFileError;
-    }
-
-    @Value("${information.loadingImageError}")
-    public void setLoadingImageError(String loadingImageError) {
-        Information.loadingImageError = loadingImageError;
+    @Value("${information.playerDataError}")
+    public void setPlayerDataError(String playerDataError) {
+        Information.playerDataError = playerDataError;
     }
 }

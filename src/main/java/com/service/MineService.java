@@ -1,5 +1,6 @@
 package com.service;
 
+import com.domain.GameOverDialogData;
 import com.domain.MineModel;
 import com.domain.GameNowData;
 import com.domain.Point;
@@ -7,20 +8,19 @@ import com.domain.Point;
 import javax.swing.*;
 
 public interface MineService {
-    String changeModel(JTextField rowTextField, JTextField columnTextField, JTextField mineNumberTextField, JTextField mineDensityTextField,
-                       String modelName);
+    boolean changeModel(JTextField rowTextField, JTextField columnTextField, JTextField mineNumberTextField, JTextField mineDensityTextField,
+                        String modelName);
 
     MineModel getNowMineModel();
 
-    String updateCustomizeData(String[] customizeData);
+    boolean updateCustomizeData(String[] customizeData);
 
     GameNowData newMineViewButtons();
 
     void fillMineData(Point point, GameNowData gameNowData);
 
-    void preloadMineData();
+    boolean changeGameName(String name);
 
-    void changeGameName(String name);
+    boolean changeOpenRecordStatus();
 
-    void changeOpenRecordStatus();
 }

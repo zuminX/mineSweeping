@@ -1,13 +1,11 @@
 package com.service;
 
-import com.domain.GameNowStatus;
-import com.domain.MineJButton;
-import com.domain.MineModel;
-import com.domain.GameNowData;
+import com.domain.*;
 import com.view.MainWindow;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 
 public interface ViewService {
     void setModelEnabled(MineModel model, JTextField rowTextField, JTextField columnTextField, JTextField mineNumberTextField);
@@ -37,4 +35,12 @@ public interface ViewService {
     void initRemainingMineNumberLabel(JLabel remainingMineNumberLabel, MineModel nowMineModel);
 
     void showNowOtherSetting(JTextField gameNameField, JCheckBox openRecordCheckBox);
+
+    void showGameOverDialog(GameOverDialogData data);
+
+    void addButtonsToPanel(MineJButton[][] buttons, JPanel buttonsPanel);
+
+    void addButtonsMouseListener(MineJButton[][] buttons);
+
+    void removeButtonsListener(MineJButton[][] buttons);
 }
