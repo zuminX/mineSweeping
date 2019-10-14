@@ -13,4 +13,6 @@ public interface MineSweepingGameDataService {
     List<MineSweepingGameData> findByPlayerName(String playerName);
 
     MineSweepingGameData insert(GameNowData gameNowData, MineModel nowMineModel);
+
+    List<MineSweepingGameData> findByPlayerNameAndModelName(String playerName, String modelNmae);
 }

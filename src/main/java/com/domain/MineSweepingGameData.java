@@ -23,27 +23,17 @@ public class MineSweepingGameData implements Serializable {
      */
     private Byte isWin;
 
-    /**
-     * 扫雷地图的行
-     */
-    private Integer row;
-
-    /**
-     * 扫雷地图的列
-     */
-    private Integer column;
-
-    /**
-     * 地雷个数
-     */
-    private Integer mineNumber;
-
-    /**
-     * 模式名称
-     */
-    private String modelName;
+    private MineSweepingModelData mineSweepingModelData;
 
     private static final long serialVersionUID = 1L;
+
+    public MineSweepingModelData getMineSweepingModelData() {
+        return mineSweepingModelData;
+    }
+
+    public void setMineSweepingModelData(MineSweepingModelData mineSweepingModelData) {
+        this.mineSweepingModelData = mineSweepingModelData;
+    }
 
     public Integer getDataId() {
         return dataId;
@@ -75,37 +65,5 @@ public class MineSweepingGameData implements Serializable {
 
     public void setIsWin(Byte isWin) {
         this.isWin = isWin;
-    }
-
-    public Integer getRow() {
-        return row;
-    }
-
-    public void setRow(Integer row) {
-        this.row = row;
-    }
-
-    public Integer getColumn() {
-        return column;
-    }
-
-    public void setColumn(Integer column) {
-        this.column = column;
-    }
-
-    public Integer getMineNumber() {
-        return mineNumber;
-    }
-
-    public void setMineNumber(Integer mineNumber) {
-        this.mineNumber = mineNumber;
-    }
-
-    public String getModelName() {
-        return modelName;
-    }
-
-    public void setModelName(String modelName) {
-        this.modelName = modelName;
     }
 }

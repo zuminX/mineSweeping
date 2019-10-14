@@ -1,17 +1,17 @@
 package com.mapper;
-import org.apache.ibatis.annotations.Param;
-import java.util.List;
 
 import com.domain.MineSweepingGameData;
 import org.apache.ibatis.annotations.Mapper;
-import org.springframework.stereotype.Repository;
+import org.apache.ibatis.annotations.Param;
 
-import javax.annotation.Resource;
+import java.util.List;
 
 @Mapper
 public interface MineSweepingGameDataMapper {
+
     int insert(MineSweepingGameData record);
 
-    List<MineSweepingGameData> findByPlayerName(@Param("playerName")String playerName);
+    List<MineSweepingGameData> findByPlayerName(@Param("playerName") String playerName);
 
+    List<MineSweepingGameData> findByPlayerNameAndModelName(@Param("playerName") String playerName, @Param("modelName") String modelName);
 }

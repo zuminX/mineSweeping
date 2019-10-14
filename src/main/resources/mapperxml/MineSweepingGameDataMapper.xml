@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.mapper.MineSweepingGameDataMapper">
+    <sql id="Base_Column_List">
+            data_id,
+            player_name,
+            `time`,
+            is_win,
+            model_id
+    </sql>
     <resultMap id="BaseResultMap" type="com.domain.MineSweepingGameData">
         <!--@mbg.generated-->
         <!--@Table mine_sweeping_game_data-->
@@ -8,15 +15,14 @@
         <result column="player_name" jdbcType="VARCHAR" property="playerName"/>
         <result column="time" jdbcType="BIGINT" property="time"/>
         <result column="is_win" jdbcType="TINYINT" property="isWin"/>
-        <result column="row" jdbcType="INTEGER" property="row"/>
-        <result column="column" jdbcType="INTEGER" property="column"/>
-        <result column="mine_number" jdbcType="INTEGER" property="mineNumber"/>
-        <result column="model_name" jdbcType="VARCHAR" property="modelName"/>
+        <association column="model_id" property="mineSweepingModelData" javaType="com.domain.MineSweepingModelData">
+            <id column="model_id" jdbcType="INTEGER" property="modelId"/>
+            <result column="row" jdbcType="INTEGER" property="row"/>
+            <result column="column" jdbcType="INTEGER" property="column"/>
+            <result column="mine_number" jdbcType="INTEGER" property="mineNumber"/>
+            <result column="model_name" jdbcType="VARCHAR" property="modelName"/>
+        </association>
     </resultMap>
-
-    <sql id="Base_Column_List">
-        `data_id`, player_name, `time`, is_win, `row`, `column`, mine_number, model_name
-    </sql>
 
     <insert id="insert"
             keyColumn="data_id"
@@ -24,18 +30,25 @@
             parameterType="com.domain.MineSweepingGameData"
             useGeneratedKeys="true">
         <!--@mbg.generated-->
-        insert into mine_sweeping_game_data (player_name, `time`, is_win,
-        `row`, `column`, mine_number,
-        model_name)
+        insert into mine_sweeping_game_data (player_name, `time`, is_win, model_id
+        )
         values (#{playerName,jdbcType=VARCHAR}, #{time,jdbcType=BIGINT}, #{isWin,jdbcType=TINYINT},
-        #{row,jdbcType=INTEGER}, #{column,jdbcType=INTEGER}, #{mineNumber,jdbcType=INTEGER},
-        #{modelName,jdbcType=VARCHAR})
+        #{mineSweepingModelData.modelId,jdbcType=INTEGER}
+        )
     </insert>
 
     <select id="findByPlayerName" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"/>
-        from mine_sweeping_game_data
-        where player_name=#{playerName,jdbcType=VARCHAR}
+        *
+        from mine_sweeping_game_data game inner join mine_sweeping_model_data model
+        on game.model_id=model.model_id AND game.player_name=#{playerName,jdbcType=VARCHAR}
+    </select>
+
+    <select id="findByPlayerNameAndModelName" resultMap="BaseResultMap">
+        select
+        *
+        from mine_sweeping_game_data game inner join mine_sweeping_model_data model
+        on game.model_id=model.model_id AND game.player_name=#{playerName,jdbcType=VARCHAR} AND
+        model.model_name=#{modelName,jdbcType=VARCHAR}
     </select>
 </mapper>

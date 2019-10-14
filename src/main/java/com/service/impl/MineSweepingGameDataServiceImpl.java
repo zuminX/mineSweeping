@@ -3,6 +3,7 @@ package com.service.impl;
 import com.dao.MineDao;
 import com.domain.*;
 import com.mapper.MineSweepingGameDataMapper;
+import com.mapper.MineSweepingModelDataMapper;
 import com.service.MineSweepingGameDataService;
 import com.utils.Information;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,9 @@ public class MineSweepingGameDataServiceImpl implements MineSweepingGameDataServ
     @Resource
     private MineSweepingGameDataMapper mineSweepingGameDataMapper;
 
+    @Resource
+    private MineSweepingModelDataMapper mineSweepingModelDataMapper;
+
     @Autowired
     private MineDao mineDao;
 
@@ -34,10 +38,25 @@ public class MineSweepingGameDataServiceImpl implements MineSweepingGameDataServ
             throw new RuntimeException(Information.playerDataError);
         }
         gameData.setTime(status.getEndTime() - status.getStartTime());
-        gameData.setRow(nowMineModel.getRow());
-        gameData.setColumn(nowMineModel.getColumn());
-        gameData.setMineNumber(nowMineModel.getMineNumber());
-        gameData.setModelName(nowMineModel.getName());
+
+        MineSweepingModelData modelData = new MineSweepingModelData();
+        modelData.setColumn(nowMineModel.getColumn());
+        modelData.setRow(nowMineModel.getRow());
+        modelData.setMineNumber(nowMineModel.getMineNumber());
+        modelData.setModelName(nowMineModel.getName());
+
+        MineSweepingModelData oldModelData = mineSweepingModelDataMapper.findOneByModelName(nowMineModel.getName());
+
+        if (oldModelData == null) {
+            mineSweepingModelDataMapper.insert(modelData);
+        } else {
+            if (!oldModelData.equals(modelData)) {
+                mineSweepingModelDataMapper.updateByModelId(modelData, oldModelData.getModelId());
+            }
+            modelData.setModelId(oldModelData.getModelId());
+        }
+
+        gameData.setMineSweepingModelData(modelData);
 
         mineSweepingGameDataMapper.insert(gameData);
 
@@ -54,7 +73,9 @@ public class MineSweepingGameDataServiceImpl implements MineSweepingGameDataServ
         } catch (IOException e) {
             throw new RuntimeException(Information.playerDataError);
         }
-        List<MineSweepingGameData> mineSweepingGameDataList = findByPlayerName(name);
+
+        List<MineSweepingGameData> mineSweepingGameDataList = findByPlayerNameAndModelName(name,
+                mineSweepingGameData.getMineSweepingModelData().getModelName());
 
         int gameNumber = mineSweepingGameDataList.size();
         int winsNumber = findWinsNumber(mineSweepingGameDataList);
@@ -65,9 +86,10 @@ public class MineSweepingGameDataServiceImpl implements MineSweepingGameDataServ
 
         data.setNowGameTime(time + "ms");
         data.setWinsNumber(winsNumber + "");
-        data.setAverageWinPercentage(gameNumber==0?"-":(format.format((double)winsNumber/gameNumber))+"%");
+        data.setAverageWinPercentage(gameNumber == 0 ? "-" : (format.format((double) winsNumber * 100 / gameNumber)) + "%");
         data.setFailNumber((gameNumber - winsNumber) + "");
-        data.setAverageTimePercentage(winsNumber==0?"-":(format.format((double)findAllWinGameTime(mineSweepingGameDataList)/winsNumber))+"ms");
+        data.setAverageTimePercentage(
+                winsNumber == 0 ? "-" : (format.format((double) findAllWinGameTime(mineSweepingGameDataList) / winsNumber)) + "ms");
         data.setAllGameNumber(gameNumber + "");
         data.setShortestTime(shortestTime == Long.MAX_VALUE ? "-" : shortestTime + "ms");
         data.setWin(mineSweepingGameData.getIsWin() == 1);
@@ -110,6 +132,11 @@ public class MineSweepingGameDataServiceImpl implements MineSweepingGameDataServ
     @Override
     public List<MineSweepingGameData> findByPlayerName(String playerName) {
         return mineSweepingGameDataMapper.findByPlayerName(playerName);
+    }
+
+    @Override
+    public List<MineSweepingGameData> findByPlayerNameAndModelName(String playerName, String modelName) {
+        return mineSweepingGameDataMapper.findByPlayerNameAndModelName(playerName, modelName);
     }
 
 }
