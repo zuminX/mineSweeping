@@ -4,12 +4,11 @@
 
 package com.view;
 
+import com.domain.*;
 import com.jgoodies.forms.factories.Borders;
 import com.controller.MineController;
-import com.domain.GameNowStatus;
-import com.domain.MineJButton;
-import com.domain.MineModel;
-import com.domain.GameNowData;
+import com.utils.BaseHolder;
+import com.utils.Information;
 import net.miginfocom.swing.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,30 +30,41 @@ public class MainWindow extends JFrame {
     @Autowired
     private MineController mineController;
 
-    private String[] tempCustomizeData;
-
     private GameNowData gameNowData;
+
+    @Autowired
+    private ViewComponent viewComponent;
 
     public MainWindow() {
         initComponents();
+
+        ViewComponent viewComponent = BaseHolder.getBean("viewComponent", ViewComponent.class);
+        viewComponent.setMainPanel(mainPanel);
+        viewComponent.setRemainingMineNumberLabel(remainingMineNumberLabel);
+        viewComponent.setExpressionLabel(expressionLabel);
+        viewComponent.setTimeLabel(timeLabel);
+        viewComponent.setButtonsPanel(buttonsPanel);
+        viewComponent.setEasyModelButton(easyModelButton);
+        viewComponent.setRowTextField(rowTextField);
+        viewComponent.setOrdinaryModelButton(ordinaryModelButton);
+        viewComponent.setColumnTextField(columnTextField);
+        viewComponent.setHardModelButton(hardModelButton);
+        viewComponent.setMineNumberTextField(mineNumberTextField);
+        viewComponent.setCustomizeModelButton(customizeModelButton);
+        viewComponent.setMineDensityTextField(mineDensityTextField);
+        viewComponent.setGameNameField(gameNameField);
+        viewComponent.setOpenRecordCheckBox(openRecordCheckBox);
     }
 
     private void showGameActionPerformed(ActionEvent e) {
-        // 写入自定义的数据
-        if (tempCustomizeData != null) {
-            if (mineController.updateCustomizeData(tempCustomizeData)) {
-                return;
-            }
-        }
         ((CardLayout) mainPanel.getLayout()).show(mainPanel, "card3");
     }
 
 
     private void changeSettingActionPerformed(ActionEvent e) {
         ((CardLayout) mainPanel.getLayout()).show(mainPanel, "card2");
-        mineController.setDefaultModel(easyModelButton, ordinaryModelButton, hardModelButton, customizeModelButton,
-                                                          rowTextField, columnTextField, mineNumberTextField, mineDensityTextField);
-        mineController.showNowOtherSetting(gameNameField, openRecordCheckBox);
+        mineController.setDefaultModel();
+        mineController.showNowOtherSetting();
     }
 
     private void showHelpActionPerformed(ActionEvent e) {
@@ -62,10 +72,9 @@ public class MainWindow extends JFrame {
     }
 
     private void changeModelActionPerformed(ActionEvent e) {
-        mineController.changeModel(rowTextField, columnTextField, mineNumberTextField, mineDensityTextField, ((JRadioButtonMenuItem) e.getSource()).getText());
+        mineController.changeModel(((JRadioButtonMenuItem) e.getSource()).getText());
     }
 
-    //TODO 存在bug，待处理（无法插旗；游戏结束时出现index越界异常）
     private void reloadLabelMouseClicked(MouseEvent e) {
         if (mineController.reloadGameData(gameNowData)) {
             return;
@@ -73,34 +82,6 @@ public class MainWindow extends JFrame {
         cleanGameData();
     }
 
-    private void rowTextFieldFocusLost(FocusEvent e) {
-        createTempCustomizeData();
-        tempCustomizeData[0] = ((JTextField)e.getSource()).getText();
-    }
-
-    private void columnTextFieldFocusLost(FocusEvent e) {
-        createTempCustomizeData();
-        tempCustomizeData[1] = ((JTextField)e.getSource()).getText();
-    }
-
-    private void mineNumberTextFieldFocusLost(FocusEvent e) {
-        createTempCustomizeData();
-        tempCustomizeData[2] = ((JTextField)e.getSource()).getText();
-    }
-
-    private void createTempCustomizeData() {
-        if (tempCustomizeData == null) {
-            tempCustomizeData = new String[3];
-
-            MineModel nowMineModel = mineController.getNowMineModel();
-
-            tempCustomizeData[0] = String.valueOf(nowMineModel.getRow());
-            tempCustomizeData[1] = String.valueOf(nowMineModel.getColumn());
-            tempCustomizeData[2] = String.valueOf(nowMineModel.getMineNumber());
-        }
-    }
-
-    //TODO 多次点击 游戏结束bug
     private void loadActionPerformed(ActionEvent e) {
         // 加载数据
         //扫雷面板初始化
@@ -111,7 +92,7 @@ public class MainWindow extends JFrame {
 
         //创建扫雷按钮组并增加监听器添加到面板中
         gameNowData = mineController.newMineViewButtons();
-        mineController.addButtonsToPanel(gameNowData.getButtons(), buttonsPanel);
+        mineController.addButtonsToPanel(gameNowData.getButtons());
 
         //绘制扫雷按钮组面板
         buttonsPanel.updateUI();
@@ -131,19 +112,15 @@ public class MainWindow extends JFrame {
 
         mineController.removeButtonsListener(gameNowData.getButtons());
 
-        mineController.showDynamicTime(timeLabel, nowStatus);
-        mineController.initRemainingMineNumberLabel(remainingMineNumberLabel);
+        mineController.showDynamicTime(nowStatus);
+        mineController.initRemainingMineNumberLabel();
         nowStatus.setInitStatus();
 
         mineController.addButtonsMouseListener(gameNowData.getButtons());
     }
 
-    private void changeGameNameFocusLost(FocusEvent e) {
-        mineController.changeGameName(gameNameField.getText());
-    }
-
-    private void openRecordActionPerformed(ActionEvent e) {
-        mineController.changeOpenRecordStatus();
+    private void saveButtonActionPerformed(ActionEvent e) {
+        mineController.saveSettingData();
     }
 
     @Component("mouseListener")
@@ -151,18 +128,18 @@ public class MainWindow extends JFrame {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            final MineJButton button = (MineJButton) e.getSource();
+            viewComponent.setNowClickButton((MineJButton) e.getSource());
             //左键为打开区块
             if(e.getButton() == MouseEvent.BUTTON1)
             {
-                if (mineController.openSpace(button, gameNowData)) {
+                if (mineController.openSpace(gameNowData)) {
                     mineController.removeButtonsListener(gameNowData.getButtons());
                 }
             }
             //右键为设置旗帜
             else if(e.getButton() == MouseEvent.BUTTON3)
             {
-                mineController.setFlag(button, remainingMineNumberLabel);
+                mineController.setFlag();
             }
         }
     }
@@ -181,7 +158,7 @@ public class MainWindow extends JFrame {
         gamePanel = new JPanel();
         panel3 = new JPanel();
         remainingMineNumberLabel = new JLabel();
-        reloadLabel = new JLabel();
+        expressionLabel = new JLabel();
         timeLabel = new JLabel();
         buttonsPanel = new JPanel();
         settingPanel = new JPanel();
@@ -203,9 +180,18 @@ public class MainWindow extends JFrame {
         gameNameField = new JTextField();
         label2 = new JLabel();
         openRecordCheckBox = new JCheckBox();
+        saveButton = new JButton();
         helpPanel = new JPanel();
         panel8 = new JPanel();
+        label3 = new JLabel();
+        label7 = new JLabel();
+        label8 = new JLabel();
+        label9 = new JLabel();
         panel9 = new JPanel();
+        label11 = new JLabel();
+        label12 = new JLabel();
+        label13 = new JLabel();
+        label14 = new JLabel();
 
         //======== this ========
         setTitle("MineSweeping");
@@ -283,14 +269,14 @@ public class MainWindow extends JFrame {
                     remainingMineNumberLabel.setOpaque(true);
                     remainingMineNumberLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-                    //---- reloadLabel ----
-                    reloadLabel.setText("text");
-                    reloadLabel.setMaximumSize(new Dimension(25, 25));
-                    reloadLabel.setMinimumSize(new Dimension(25, 25));
-                    reloadLabel.setPreferredSize(new Dimension(25, 25));
-                    reloadLabel.setIcon(new ImageIcon(getClass().getResource("/image/confused.png")));
-                    reloadLabel.setBorder(new MatteBorder(1, 1, 1, 1, Color.black));
-                    reloadLabel.addMouseListener(new MouseAdapter() {
+                    //---- expressionLabel ----
+                    expressionLabel.setText("text");
+                    expressionLabel.setMaximumSize(new Dimension(25, 25));
+                    expressionLabel.setMinimumSize(new Dimension(25, 25));
+                    expressionLabel.setPreferredSize(new Dimension(25, 25));
+                    expressionLabel.setIcon(new ImageIcon(getClass().getResource("/image/confused.png")));
+                    expressionLabel.setBorder(new MatteBorder(1, 1, 1, 1, Color.black));
+                    expressionLabel.addMouseListener(new MouseAdapter() {
                         @Override
                         public void mouseClicked(MouseEvent e) {
                             reloadLabelMouseClicked(e);
@@ -313,11 +299,11 @@ public class MainWindow extends JFrame {
                             .addGroup(panel3Layout.createSequentialGroup()
                                 .addContainerGap(36, Short.MAX_VALUE)
                                 .addComponent(remainingMineNumberLabel)
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 116, Short.MAX_VALUE)
-                                .addComponent(reloadLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 111, Short.MAX_VALUE)
+                                .addGap(112, 112, 112)
+                                .addComponent(expressionLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 126, Short.MAX_VALUE)
                                 .addComponent(timeLabel)
-                                .addContainerGap(44, Short.MAX_VALUE))
+                                .addGap(33, 33, 33))
                     );
                     panel3Layout.setVerticalGroup(
                         panel3Layout.createParallelGroup()
@@ -325,7 +311,7 @@ public class MainWindow extends JFrame {
                                 .addGroup(panel3Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                     .addComponent(remainingMineNumberLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(timeLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(reloadLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addComponent(expressionLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGap(0, 0, Short.MAX_VALUE))
                     );
                 }
@@ -375,12 +361,6 @@ public class MainWindow extends JFrame {
                     //---- rowTextField ----
                     rowTextField.setText("text");
                     rowTextField.setEnabled(false);
-                    rowTextField.addFocusListener(new FocusAdapter() {
-                        @Override
-                        public void focusLost(FocusEvent e) {
-                            rowTextFieldFocusLost(e);
-                        }
-                    });
                     panel6.add(rowTextField, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0,
                         GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                         new Insets(0, 0, 5, 0), 0, 0));
@@ -401,12 +381,6 @@ public class MainWindow extends JFrame {
                     //---- columnTextField ----
                     columnTextField.setText("text");
                     columnTextField.setEnabled(false);
-                    columnTextField.addFocusListener(new FocusAdapter() {
-                        @Override
-                        public void focusLost(FocusEvent e) {
-                            columnTextFieldFocusLost(e);
-                        }
-                    });
                     panel6.add(columnTextField, new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0,
                         GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                         new Insets(0, 0, 5, 0), 0, 0));
@@ -427,12 +401,6 @@ public class MainWindow extends JFrame {
                     //---- mineNumberTextField ----
                     mineNumberTextField.setText("text");
                     mineNumberTextField.setEnabled(false);
-                    mineNumberTextField.addFocusListener(new FocusAdapter() {
-                        @Override
-                        public void focusLost(FocusEvent e) {
-                            mineNumberTextFieldFocusLost(e);
-                        }
-                    });
                     panel6.add(mineNumberTextField, new GridBagConstraints(2, 2, 1, 1, 0.0, 0.0,
                         GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                         new Insets(0, 0, 5, 0), 0, 0));
@@ -468,23 +436,15 @@ public class MainWindow extends JFrame {
                         Borders.DLU2_BORDER));
                     panel7.setLayout(new GridBagLayout());
                     ((GridBagLayout)panel7.getLayout()).columnWidths = new int[] {66, 0, 0};
-                    ((GridBagLayout)panel7.getLayout()).rowHeights = new int[] {0, 0, 0};
+                    ((GridBagLayout)panel7.getLayout()).rowHeights = new int[] {0, 0, 0, 0};
                     ((GridBagLayout)panel7.getLayout()).columnWeights = new double[] {0.0, 1.0, 1.0E-4};
-                    ((GridBagLayout)panel7.getLayout()).rowWeights = new double[] {0.0, 0.0, 1.0E-4};
+                    ((GridBagLayout)panel7.getLayout()).rowWeights = new double[] {0.0, 0.0, 0.0, 1.0E-4};
 
                     //---- label1 ----
                     label1.setText("\u6e38\u620f\u540d\uff1a");
                     panel7.add(label1, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
                         GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                         new Insets(0, 0, 5, 5), 0, 0));
-
-                    //---- gameNameField ----
-                    gameNameField.addFocusListener(new FocusAdapter() {
-                        @Override
-                        public void focusLost(FocusEvent e) {
-                            changeGameNameFocusLost(e);
-                        }
-                    });
                     panel7.add(gameNameField, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
                         GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                         new Insets(0, 0, 5, 0), 0, 0));
@@ -493,12 +453,16 @@ public class MainWindow extends JFrame {
                     label2.setText("\u5f00\u542f\u8bb0\u5f55\uff1a");
                     panel7.add(label2, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
                         GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                        new Insets(0, 0, 0, 5), 0, 0));
-
-                    //---- openRecordCheckBox ----
-                    openRecordCheckBox.addActionListener(e -> openRecordActionPerformed(e));
+                        new Insets(0, 0, 5, 5), 0, 0));
                     panel7.add(openRecordCheckBox, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
                         GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                        new Insets(0, 0, 5, 0), 0, 0));
+
+                    //---- saveButton ----
+                    saveButton.setText("\u4fdd\u5b58");
+                    saveButton.addActionListener(e -> saveButtonActionPerformed(e));
+                    panel7.add(saveButton, new GridBagConstraints(0, 2, 2, 1, 0.0, 0.0,
+                        GridBagConstraints.SOUTH, GridBagConstraints.HORIZONTAL,
                         new Insets(0, 0, 0, 0), 0, 0));
                 }
                 settingPanel.add(panel7, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
@@ -520,11 +484,36 @@ public class MainWindow extends JFrame {
                     panel8.setBorder(new CompoundBorder(
                         new TitledBorder("\u6e38\u620f"),
                         Borders.DLU2_BORDER));
+                    panel8.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 12));
                     panel8.setLayout(new GridBagLayout());
                     ((GridBagLayout)panel8.getLayout()).columnWidths = new int[] {90, 0};
-                    ((GridBagLayout)panel8.getLayout()).rowHeights = new int[] {0, 0, 0, 0, 0};
+                    ((GridBagLayout)panel8.getLayout()).rowHeights = new int[] {27, 27, 27, 22, 0};
                     ((GridBagLayout)panel8.getLayout()).columnWeights = new double[] {1.0, 1.0E-4};
                     ((GridBagLayout)panel8.getLayout()).rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 1.0E-4};
+
+                    //---- label3 ----
+                    label3.setText("text");
+                    panel8.add(label3, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
+                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                        new Insets(0, 0, 5, 0), 0, 0));
+
+                    //---- label7 ----
+                    label7.setText("text");
+                    panel8.add(label7, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
+                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                        new Insets(0, 0, 5, 0), 0, 0));
+
+                    //---- label8 ----
+                    label8.setText("text");
+                    panel8.add(label8, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0,
+                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                        new Insets(0, 0, 5, 0), 0, 0));
+
+                    //---- label9 ----
+                    label9.setText("text");
+                    panel8.add(label9, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0,
+                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                        new Insets(0, 0, 0, 0), 0, 0));
                 }
                 helpPanel.add(panel8, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
@@ -537,9 +526,33 @@ public class MainWindow extends JFrame {
                         Borders.DLU2_BORDER));
                     panel9.setLayout(new GridBagLayout());
                     ((GridBagLayout)panel9.getLayout()).columnWidths = new int[] {0, 0};
-                    ((GridBagLayout)panel9.getLayout()).rowHeights = new int[] {0, 0, 0, 0};
+                    ((GridBagLayout)panel9.getLayout()).rowHeights = new int[] {27, 27, 27, 22, 0};
                     ((GridBagLayout)panel9.getLayout()).columnWeights = new double[] {1.0, 1.0E-4};
-                    ((GridBagLayout)panel9.getLayout()).rowWeights = new double[] {0.0, 0.0, 0.0, 1.0E-4};
+                    ((GridBagLayout)panel9.getLayout()).rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 1.0E-4};
+
+                    //---- label11 ----
+                    label11.setText("text");
+                    panel9.add(label11, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
+                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                        new Insets(0, 0, 5, 0), 0, 0));
+
+                    //---- label12 ----
+                    label12.setText("text");
+                    panel9.add(label12, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
+                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                        new Insets(0, 0, 5, 0), 0, 0));
+
+                    //---- label13 ----
+                    label13.setText("text");
+                    panel9.add(label13, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0,
+                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                        new Insets(0, 0, 5, 0), 0, 0));
+
+                    //---- label14 ----
+                    label14.setText("text");
+                    panel9.add(label14, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0,
+                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                        new Insets(0, 0, 0, 0), 0, 0));
                 }
                 helpPanel.add(panel9, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
@@ -574,7 +587,7 @@ public class MainWindow extends JFrame {
     private JPanel gamePanel;
     private JPanel panel3;
     private JLabel remainingMineNumberLabel;
-    private JLabel reloadLabel;
+    private JLabel expressionLabel;
     private JLabel timeLabel;
     private JPanel buttonsPanel;
     private JPanel settingPanel;
@@ -596,8 +609,17 @@ public class MainWindow extends JFrame {
     private JTextField gameNameField;
     private JLabel label2;
     private JCheckBox openRecordCheckBox;
+    private JButton saveButton;
     private JPanel helpPanel;
     private JPanel panel8;
+    private JLabel label3;
+    private JLabel label7;
+    private JLabel label8;
+    private JLabel label9;
     private JPanel panel9;
+    private JLabel label11;
+    private JLabel label12;
+    private JLabel label13;
+    private JLabel label14;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }

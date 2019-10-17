@@ -76,12 +76,12 @@ public class MineDaoImpl implements MineDao {
     }
 
     @Override
-    public void changeOpenRecordStatus() throws IOException {
+    public void changeOpenRecordStatus(boolean isSelected) throws IOException {
         properties.load(getClass().getResourceAsStream(playerDataSettingPath));
 
         String oldOpenRecordStatus = properties.getProperty("game.openRecord");
 
-        properties.setProperty("game.openRecord", oldOpenRecordStatus.equals("1")?"0":"1");
+        properties.setProperty("game.openRecord", isSelected?"1":"0");
 
         properties.store(new FileOutputStream(getClass().getResource(playerDataSettingPath).getPath()), "");
     }

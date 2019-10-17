@@ -5,11 +5,11 @@ import com.domain.*;
 import com.service.MineService;
 import com.service.MineSweepingGameDataService;
 import com.service.ViewService;
+import com.utils.BaseHolder;
 import com.view.MainWindow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import javax.swing.*;
 import java.awt.*;
 
 @Controller("mineController")
@@ -22,34 +22,25 @@ public class MineControllerImpl implements MineController {
     private MineSweepingGameDataService mineSweepingGameDataService;
 
     @Override
-    public boolean changeModel(JTextField rowTextField, JTextField columnTextField, JTextField mineNumberTextField, JTextField mineDensityTextField,
-                               String modelName) {
-        final boolean err = mineService.changeModel(rowTextField, columnTextField, mineNumberTextField, mineDensityTextField, modelName);
-        if (err) {
+    public boolean changeModel(String modelName) {
+        if (mineService.changeModel(modelName) == null) {
             return true;
         }
         final MineModel nowMineModel = mineService.getNowMineModel();
-        viewService.setModelEnabled(nowMineModel, rowTextField, columnTextField, mineNumberTextField);
-        viewService.setModelDataText(nowMineModel, rowTextField, columnTextField, mineNumberTextField, mineDensityTextField);
+        viewService.setModelEnabled(nowMineModel);
+        viewService.setModelDataText(nowMineModel);
         return false;
     }
 
     @Override
-    public boolean setDefaultModel(JRadioButtonMenuItem easyModelButton, JRadioButtonMenuItem ordinaryModelButton,
-                                   JRadioButtonMenuItem hardModelButton, JRadioButtonMenuItem customizeModelButton, JTextField rowTextField,
-                                   JTextField columnTextField, JTextField mineNumberTextField, JTextField mineDensityTextField) {
-        viewService.setDefaultModel(mineService.getNowMineModel(), easyModelButton, ordinaryModelButton, hardModelButton, customizeModelButton);
-        return changeModel(rowTextField, columnTextField, mineNumberTextField, mineDensityTextField, mineService.getNowMineModel().getName());
+    public boolean setDefaultModel() {
+        viewService.setDefaultModel(mineService.getNowMineModel());
+        return changeModel(mineService.getNowMineModel().getName());
     }
 
     @Override
     public MineModel getNowMineModel() {
         return mineService.getNowMineModel();
-    }
-
-    @Override
-    public boolean updateCustomizeData(String[] customizeData) {
-        return mineService.updateCustomizeData(customizeData);
     }
 
     @Override
@@ -63,9 +54,10 @@ public class MineControllerImpl implements MineController {
     }
 
     @Override
-    public boolean openSpace(MineJButton button, GameNowData gameNowData) {
+    public boolean openSpace(GameNowData gameNowData) {
         //选择合适地图，规避第一步就是雷
         GameNowStatus nowStatus = gameNowData.getNowStatus();
+        MineJButton button = BaseHolder.getBean("viewComponent", ViewComponent.class).getNowClickButton();
         if (nowStatus.getOpenSpace() == 0) {
             mineService.fillMineData(button.getPoint(), gameNowData);
             nowStatus.setStartTime(System.currentTimeMillis());
@@ -84,8 +76,8 @@ public class MineControllerImpl implements MineController {
     }
 
     @Override
-    public void setFlag(MineJButton button, JLabel remainingMineNumberLabel) {
-        viewService.setFlag(button, remainingMineNumberLabel);
+    public void setFlag() {
+        viewService.setFlag();
     }
 
     @Override
@@ -98,33 +90,23 @@ public class MineControllerImpl implements MineController {
     }
 
     @Override
-    public void showDynamicTime(JLabel timeLabel, GameNowStatus gameNowStatus) {
-        viewService.showDynamicTime(timeLabel, gameNowStatus);
+    public void showDynamicTime(GameNowStatus gameNowStatus) {
+        viewService.showDynamicTime(gameNowStatus);
     }
 
     @Override
-    public void initRemainingMineNumberLabel(JLabel remainingMineNumberLabel) {
-        viewService.initRemainingMineNumberLabel(remainingMineNumberLabel, mineService.getNowMineModel());
+    public void initRemainingMineNumberLabel() {
+        viewService.initRemainingMineNumberLabel(mineService.getNowMineModel());
     }
 
     @Override
-    public void changeGameName(String name) {
-        mineService.changeGameName(name);
+    public void showNowOtherSetting() {
+        viewService.showNowOtherSetting();
     }
 
     @Override
-    public void showNowOtherSetting(JTextField gameNameField, JCheckBox openRecordCheckBox) {
-        viewService.showNowOtherSetting(gameNameField, openRecordCheckBox);
-    }
-
-    @Override
-    public void changeOpenRecordStatus() {
-        mineService.changeOpenRecordStatus();
-    }
-
-    @Override
-    public void addButtonsToPanel(MineJButton[][] buttons, JPanel buttonsPanel) {
-        viewService.addButtonsToPanel(buttons, buttonsPanel);
+    public void addButtonsToPanel(MineJButton[][] buttons) {
+        viewService.addButtonsToPanel(buttons);
     }
 
     @Override
@@ -135,6 +117,13 @@ public class MineControllerImpl implements MineController {
     @Override
     public void removeButtonsListener(MineJButton[][] buttons) {
         viewService.removeButtonsListener(buttons);
+    }
+
+    @Override
+    public void saveSettingData() {
+        if (mineService.saveSettingData() == null) {
+            viewService.showInformation("保存成功！");
+        }
     }
 
 }

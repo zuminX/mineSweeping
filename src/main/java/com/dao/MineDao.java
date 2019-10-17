@@ -14,5 +14,5 @@ public interface MineDao {
 
     boolean findNowOpenRecordStatus() throws IOException;
 
-    void changeOpenRecordStatus() throws IOException;
+    void changeOpenRecordStatus(boolean isSelected) throws IOException;
 }

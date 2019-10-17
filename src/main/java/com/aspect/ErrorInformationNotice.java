@@ -33,7 +33,7 @@ public class ErrorInformationNotice {
      *
      * @return 有异常->true 无异常->false
      */
-    @Around("execution(public boolean com.service.impl.*ServiceImpl.*(..))")
+    @Around("execution(public * com.service.impl.*ServiceImpl.*(..))")
     public Object ErrorInformationProcess(ProceedingJoinPoint proceedingJoinPoint) {
         Object returnValue = null;
         try {
@@ -45,7 +45,6 @@ public class ErrorInformationNotice {
             //捕捉异常，记录异常，显示异常信息给用户
             LOGGER.error("", throwable);
             viewService.showErrorInformation(throwable.getMessage());
-            return true;
         }
         return returnValue;
     }

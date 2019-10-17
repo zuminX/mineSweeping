@@ -7,7 +7,6 @@ import com.utils.Information;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Queue;
@@ -21,6 +20,9 @@ public class MineServiceImpl implements MineService {
     @Autowired
     private MineDao mineDao;
 
+    @Autowired
+    private ViewComponent viewComponent;
+
     private Mine mine = new Mine();
     private Preload preload = new Preload();
 
@@ -31,8 +33,7 @@ public class MineServiceImpl implements MineService {
     }
 
     @Override
-    public boolean changeModel(JTextField rowTextField, JTextField columnTextField, JTextField mineNumberTextField, JTextField mineDensityTextField,
-                               String modelName) {
+    public Boolean changeModel(String modelName) {
         MineModel model = null;
         switch (modelName) {
             case "简单":
@@ -58,26 +59,6 @@ public class MineServiceImpl implements MineService {
     @Override
     public MineModel getNowMineModel() {
         return mine.getNowMineModel();
-    }
-
-    @Override
-    public boolean updateCustomizeData(String[] customizeData) {
-        MineModel customizeModelByData;
-        try {
-            customizeModelByData = mineDao.findCustomizeModelByData(customizeData[0], customizeData[1], customizeData[2]);
-        } catch (IOException e) {
-            throw new RuntimeException(Information.loadGameBasicSettingError);
-        }
-        if (customizeModelByData == null) {
-            throw new RuntimeException(Information.changeCustomizeDataError);
-        }
-        mine.setCustomizeModel(customizeModelByData);
-        try {
-            mineDao.updateCustomizeModelInProperties(customizeModelByData);
-        } catch (IOException e) {
-            throw new RuntimeException(Information.loadGameBasicSettingError);
-        }
-        return false;
     }
 
     @Override
@@ -119,7 +100,28 @@ public class MineServiceImpl implements MineService {
     }
 
     @Override
-    public boolean changeGameName(String name) {
+    public Boolean saveSettingData() {
+        MineModel customizeModelByData;
+        try {
+            customizeModelByData = mineDao.findCustomizeModelByData(viewComponent.getRowTextField().getText(),
+                    viewComponent.getColumnTextField().getText(), viewComponent.getMineNumberTextField().getText());
+        } catch (IOException e) {
+            throw new RuntimeException(Information.loadGameBasicSettingError);
+        }
+
+        if (customizeModelByData == null) {
+            throw new RuntimeException(Information.changeCustomizeDataError);
+        }
+
+        mine.setCustomizeModel(customizeModelByData);
+
+        try {
+            mineDao.updateCustomizeModelInProperties(customizeModelByData);
+        } catch (IOException e) {
+            throw new RuntimeException(Information.loadGameBasicSettingError);
+        }
+
+        final String name = viewComponent.getGameNameField().getText();
         if (name.trim().equals("")) {
             throw new RuntimeException(Information.playerNameNotNull);
         }
@@ -128,13 +130,9 @@ public class MineServiceImpl implements MineService {
         } catch (IOException e) {
             throw new RuntimeException(Information.loadPlayerDataSettingError);
         }
-        return false;
-    }
 
-    @Override
-    public boolean changeOpenRecordStatus() {
         try {
-            mineDao.changeOpenRecordStatus();
+            mineDao.changeOpenRecordStatus(viewComponent.getOpenRecordCheckBox().isSelected());
         } catch (IOException e) {
             throw new RuntimeException(Information.loadPlayerDataSettingError);
         }

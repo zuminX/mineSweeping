@@ -37,7 +37,6 @@
         <property name="basePackage" value="com.mapper"/>
     </bean>
 
-
     <bean id="properties" class="java.util.Properties"/>
 
     <!--开启注解aop的支持-->

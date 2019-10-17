@@ -7,6 +7,7 @@ import com.service.ViewService;
 import com.utils.BaseHolder;
 import com.utils.ButtonImage;
 import com.utils.GameOverDialog;
+import com.utils.Information;
 import com.view.MainWindow;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,26 +24,28 @@ public class ViewServiceImpl implements ViewService {
     private final ThreadLocal<DynamicTime> thread = new ThreadLocal<DynamicTime>();
 
     @Autowired
+    private ViewComponent viewComponent;
+
+    @Autowired
     private MineDao mineDao;
 
     @Override
-    public void setModelEnabled(MineModel model, JTextField rowTextField, JTextField columnTextField, JTextField mineNumberTextField) {
-        setEnabled(model.getName().equals("自定义"), rowTextField, columnTextField, mineNumberTextField);
+    public void setModelEnabled(MineModel model) {
+        setEnabled(model.getName().equals("自定义"));
     }
 
     @Override
-    public void setModelDataText(MineModel model, JTextField rowTextField, JTextField columnTextField, JTextField mineNumberTextField,
-                                 JTextField mineDensityTextField) {
-        rowTextField.setText(String.valueOf(model.getRow()));
-        columnTextField.setText(String.valueOf(model.getColumn()));
-        mineNumberTextField.setText(String.valueOf(model.getMineNumber()));
-        mineDensityTextField.setText(String.valueOf(model.getMineDensity()));
+    public void setModelDataText(MineModel model) {
+        viewComponent.getRowTextField().setText(String.valueOf(model.getRow()));
+        viewComponent.getColumnTextField().setText(String.valueOf(model.getColumn()));
+        viewComponent.getMineNumberTextField().setText(String.valueOf(model.getMineNumber()));
+        viewComponent.getMineDensityTextField().setText(String.valueOf(model.getMineDensity()));
     }
 
-    private void setEnabled(boolean enabled, JTextField... textFields) {
-        for (JTextField textField : textFields) {
-            textField.setEnabled(enabled);
-        }
+    private void setEnabled(boolean enabled) {
+        viewComponent.getRowTextField().setEnabled(enabled);
+        viewComponent.getColumnTextField().setEnabled(enabled);
+        viewComponent.getMineNumberTextField().setEnabled(enabled);
     }
 
     @Override
@@ -56,20 +59,19 @@ public class ViewServiceImpl implements ViewService {
     }
 
     @Override
-    public void setDefaultModel(MineModel model, JRadioButtonMenuItem easyModelButton, JRadioButtonMenuItem ordinaryModelButton,
-                                JRadioButtonMenuItem hardModelButton, JRadioButtonMenuItem customizeModelButton) {
+    public void setDefaultModel(MineModel model) {
         switch (model.getName()) {
             case "简单":
-                easyModelButton.setSelected(true);
+                viewComponent.getEasyModelButton().setSelected(true);
                 break;
             case "普通":
-                ordinaryModelButton.setSelected(true);
+                viewComponent.getOrdinaryModelButton().setSelected(true);
                 break;
             case "困难":
-                hardModelButton.setSelected(true);
+                viewComponent.getHardModelButton().setSelected(true);
                 break;
             case "自定义":
-                customizeModelButton.setSelected(true);
+                viewComponent.getCustomizeModelButton().setSelected(true);
                 break;
         }
     }
@@ -82,7 +84,7 @@ public class ViewServiceImpl implements ViewService {
     }
 
     @Override
-    public String loadRemainderButtonsIcon(GameNowData gameNowData) {
+    public void loadRemainderButtonsIcon(GameNowData gameNowData) {
         final MineJButton[][] buttons = gameNowData.getButtons();
 
         for (MineJButton[] button : buttons) {
@@ -97,7 +99,6 @@ public class ViewServiceImpl implements ViewService {
                 }
             }
         }
-        return null;
     }
 
     @Override
@@ -129,7 +130,9 @@ public class ViewServiceImpl implements ViewService {
     }
 
     @Override
-    public String setFlag(MineJButton button, JLabel remainingMineNumberLabel) {
+    public void setFlag() {
+        MineJButton button = viewComponent.getNowClickButton();
+        JLabel remainingMineNumberLabel = viewComponent.getRemainingMineNumberLabel();
         if (button.isFlag()) {
             button.setIcon(null);
             remainingMineNumberLabel.setText((Integer.parseInt(remainingMineNumberLabel.getText()) + 1) + "");
@@ -139,7 +142,6 @@ public class ViewServiceImpl implements ViewService {
             remainingMineNumberLabel.setText((Integer.parseInt(remainingMineNumberLabel.getText()) - 1) + "");
             button.setFlag(true);
         }
-        return null;
     }
 
     @Override
@@ -156,21 +158,21 @@ public class ViewServiceImpl implements ViewService {
     }
 
     @Override
-    public void showDynamicTime(JLabel timeLabel, GameNowStatus gameNowStatus) {
+    public void showDynamicTime(GameNowStatus gameNowStatus) {
         if (thread.get() == null) {
-            thread.set(new DynamicTime(timeLabel, gameNowStatus));
+            thread.set(new DynamicTime(viewComponent.getTimeLabel(), gameNowStatus));
             new Thread(thread.get()).start();
         }
         thread.get().setInitStatus(gameNowStatus);
     }
 
     @Override
-    public void initRemainingMineNumberLabel(JLabel remainingMineNumberLabel, MineModel nowMineModel) {
-        remainingMineNumberLabel.setText(nowMineModel.getMineNumber() + "");
+    public void initRemainingMineNumberLabel(MineModel nowMineModel) {
+        viewComponent.getRemainingMineNumberLabel().setText(nowMineModel.getMineNumber() + "");
     }
 
     @Override
-    public void showNowOtherSetting(JTextField gameNameField, JCheckBox openRecordCheckBox) {
+    public void showNowOtherSetting() {
         String gameName = null;
         boolean nowOpenRecordStatus = false;
         try {
@@ -182,8 +184,8 @@ public class ViewServiceImpl implements ViewService {
         if (gameName == null || gameName.trim().equals("")) {
             throw new RuntimeException();
         }
-        gameNameField.setText(gameName);
-        openRecordCheckBox.setSelected(nowOpenRecordStatus);
+        viewComponent.getGameNameField().setText(gameName);
+        viewComponent.getOpenRecordCheckBox().setSelected(nowOpenRecordStatus);
     }
 
     @Override
@@ -193,16 +195,9 @@ public class ViewServiceImpl implements ViewService {
         }
 
         GameOverDialog gameOverDialog = new GameOverDialog();
-        StringBuilder title = new StringBuilder(16);
-        if (data.isWin()) {
-            title.append("你赢了！");
-            if (data.isBreakRecord()) {
-                title.append("（你打破了你的记录）");
-            }
-        } else {
-            title.append("你输了！");
-        }
-        gameOverDialog.setTitle(title.toString());
+
+        gameOverDialog.setTitle(
+                data.isWin() ? (data.isBreakRecord() ? Information.titleWinAndBreakRecord : Information.titleWin) : Information.titleFail);
 
         gameOverDialog.initShowData(data);
 
@@ -213,7 +208,8 @@ public class ViewServiceImpl implements ViewService {
      * 添加扫雷按钮组到扫雷面板中
      */
     @Override
-    public void addButtonsToPanel(MineJButton[][] buttons, JPanel buttonsPanel) {
+    public void addButtonsToPanel(MineJButton[][] buttons) {
+        JPanel buttonsPanel = viewComponent.getButtonsPanel();
         for (JButton[] button : buttons) {
             for (JButton b : button) {
                 buttonsPanel.add(b);

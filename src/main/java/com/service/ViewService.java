@@ -8,37 +8,35 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 
 public interface ViewService {
-    void setModelEnabled(MineModel model, JTextField rowTextField, JTextField columnTextField, JTextField mineNumberTextField);
+    void setModelEnabled(MineModel model);
 
-    void setModelDataText(MineModel model, JTextField rowTextField, JTextField columnTextField, JTextField mineNumberTextField,
-                          JTextField mineDensityTextField);
+    void setModelDataText(MineModel model);
 
     void showErrorInformation(String err);
 
     void showInformation(String information);
 
-    void setDefaultModel(MineModel model, JRadioButtonMenuItem easyModelButton, JRadioButtonMenuItem ordinaryModelButton,
-                         JRadioButtonMenuItem hardModelButton, JRadioButtonMenuItem customizeModelButton);
+    void setDefaultModel(MineModel model);
 
     void setWindowSize(MineModel nowMineModel, MainWindow mainWindow, Dimension screenSize);
 
-    String loadRemainderButtonsIcon(GameNowData gameNowData);
+    void loadRemainderButtonsIcon(GameNowData gameNowData);
 
     boolean openSpace(MineJButton button, GameNowData gameNowData);
 
-    String setFlag(MineJButton button, JLabel remainingMineNumberLabel);
+    void setFlag();
 
     void cleanViewData(GameNowData gameNowData);
 
-    void showDynamicTime(JLabel timeLabel, GameNowStatus gameNowStatus);
+    void showDynamicTime(GameNowStatus gameNowStatus);
 
-    void initRemainingMineNumberLabel(JLabel remainingMineNumberLabel, MineModel nowMineModel);
+    void initRemainingMineNumberLabel(MineModel nowMineModel);
 
-    void showNowOtherSetting(JTextField gameNameField, JCheckBox openRecordCheckBox);
+    void showNowOtherSetting();
 
     void showGameOverDialog(GameOverDialogData data);
 
-    void addButtonsToPanel(MineJButton[][] buttons, JPanel buttonsPanel);
+    void addButtonsToPanel(MineJButton[][] buttons);
 
     void addButtonsMouseListener(MineJButton[][] buttons);
 
