@@ -33,7 +33,7 @@ public class OpenRecordInterceptor {
      *
      * @return 有异常->true 无异常->false
      */
-    @Around("execution(public * com.service.impl.MineSweepingGameDataServiceImpl.*(..))")
+    @Around("execution(public * com.service.impl.MineSweepingGameDataServiceImpl.*.*(..))")
     public Object OpenRecordInterceptorProcess(ProceedingJoinPoint proceedingJoinPoint) {
         Object returnValue = null;
         try {

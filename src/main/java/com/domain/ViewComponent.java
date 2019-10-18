@@ -1,6 +1,5 @@
 package com.domain;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
@@ -23,6 +22,14 @@ public class ViewComponent {
     private JTextField mineDensityTextField;
     private JTextField gameNameField;
     private JCheckBox openRecordCheckBox;
+    private JLabel easyModelBestPlayerNameLabel;
+    private JLabel easyModelBestTimeLabel;
+    private JLabel ordinaryModelBestPlayerNameLabel;
+    private JLabel ordinaryModelBestTimeLabel;
+    private JLabel hardModelBestPlayerNameLabel;
+    private JLabel hardModelBestTimeLabel;
+    private JLabel customizeModelBestPlayerNameLabel;
+    private JLabel customizeModelBestTimeLabel;
 
     public MineJButton getNowClickButton() {
         return nowClickButton;
@@ -150,5 +157,69 @@ public class ViewComponent {
 
     public void setOpenRecordCheckBox(JCheckBox openRecordCheckBox) {
         this.openRecordCheckBox = openRecordCheckBox;
+    }
+
+    public JLabel getEasyModelBestPlayerNameLabel() {
+        return easyModelBestPlayerNameLabel;
+    }
+
+    public void setEasyModelBestPlayerNameLabel(JLabel easyModelBestPlayerNameLabel) {
+        this.easyModelBestPlayerNameLabel = easyModelBestPlayerNameLabel;
+    }
+
+    public JLabel getEasyModelBestTimeLabel() {
+        return easyModelBestTimeLabel;
+    }
+
+    public void setEasyModelBestTimeLabel(JLabel easyModelBestTimeLabel) {
+        this.easyModelBestTimeLabel = easyModelBestTimeLabel;
+    }
+
+    public JLabel getOrdinaryModelBestPlayerNameLabel() {
+        return ordinaryModelBestPlayerNameLabel;
+    }
+
+    public void setOrdinaryModelBestPlayerNameLabel(JLabel ordinaryModelBestPlayerNameLabel) {
+        this.ordinaryModelBestPlayerNameLabel = ordinaryModelBestPlayerNameLabel;
+    }
+
+    public JLabel getOrdinaryModelBestTimeLabel() {
+        return ordinaryModelBestTimeLabel;
+    }
+
+    public void setOrdinaryModelBestTimeLabel(JLabel ordinaryModelBestTimeLabel) {
+        this.ordinaryModelBestTimeLabel = ordinaryModelBestTimeLabel;
+    }
+
+    public JLabel getHardModelBestPlayerNameLabel() {
+        return hardModelBestPlayerNameLabel;
+    }
+
+    public void setHardModelBestPlayerNameLabel(JLabel hardModelBestPlayerNameLabel) {
+        this.hardModelBestPlayerNameLabel = hardModelBestPlayerNameLabel;
+    }
+
+    public JLabel getHardModelBestTimeLabel() {
+        return hardModelBestTimeLabel;
+    }
+
+    public void setHardModelBestTimeLabel(JLabel hardModelBestTimeLabel) {
+        this.hardModelBestTimeLabel = hardModelBestTimeLabel;
+    }
+
+    public JLabel getCustomizeModelBestPlayerNameLabel() {
+        return customizeModelBestPlayerNameLabel;
+    }
+
+    public void setCustomizeModelBestPlayerNameLabel(JLabel customizeModelBestPlayerNameLabel) {
+        this.customizeModelBestPlayerNameLabel = customizeModelBestPlayerNameLabel;
+    }
+
+    public JLabel getCustomizeModelBestTimeLabel() {
+        return customizeModelBestTimeLabel;
+    }
+
+    public void setCustomizeModelBestTimeLabel(JLabel customizeModelBestTimeLabel) {
+        this.customizeModelBestTimeLabel = customizeModelBestTimeLabel;
     }
 }

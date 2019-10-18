@@ -27,17 +27,25 @@ public class MineSweepingGameDataServiceImpl implements MineSweepingGameDataServ
     private MineDao mineDao;
 
     @Override
+    public MineSweepingGameData[] findAllModelBestGameData() {
+        final MineSweepingGameData easyModelWinGameData = mineSweepingGameDataMapper.findByModelNameOrderByTime("简单");
+        final MineSweepingGameData ordinaryModelWinGameData = mineSweepingGameDataMapper.findByModelNameOrderByTime("普通");
+        final MineSweepingGameData hardModelWinGameData = mineSweepingGameDataMapper.findByModelNameOrderByTime("困难");
+        final MineSweepingGameData customizeModelWinGameData = mineSweepingGameDataMapper.findByModelNameOrderByTime("自定义");
+        return new MineSweepingGameData[]{easyModelWinGameData, ordinaryModelWinGameData, hardModelWinGameData, customizeModelWinGameData};
+    }
+
+    @Override
     public MineSweepingGameData insert(GameNowData gameNowData, MineModel nowMineModel) {
         MineSweepingGameData gameData = new MineSweepingGameData();
-        GameNowStatus status = gameNowData.getNowStatus();
 
-        gameData.setIsWin((byte) (status.isWin() ? 1 : 0));
+        gameData.setIsWin((byte) (gameNowData.isWin() ? 1 : 0));
         try {
             gameData.setPlayerName(mineDao.findNowGameName());
         } catch (IOException e) {
             throw new RuntimeException(Information.playerDataError);
         }
-        gameData.setTime(status.getEndTime() - status.getStartTime());
+        gameData.setTime(gameNowData.getEndTime() - gameNowData.getStartTime());
 
         MineSweepingModelData modelData = new MineSweepingModelData();
         modelData.setColumn(nowMineModel.getColumn());

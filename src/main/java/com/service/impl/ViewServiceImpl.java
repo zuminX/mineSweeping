@@ -5,7 +5,7 @@ import com.domain.Point;
 import com.domain.*;
 import com.service.ViewService;
 import com.utils.BaseHolder;
-import com.utils.ButtonImage;
+import com.utils.ComponentImage;
 import com.utils.GameOverDialog;
 import com.utils.Information;
 import com.view.MainWindow;
@@ -28,6 +28,9 @@ public class ViewServiceImpl implements ViewService {
 
     @Autowired
     private MineDao mineDao;
+
+    @Autowired
+    private GameNowData gameNowData;
 
     @Override
     public void setModelEnabled(MineModel model) {
@@ -91,11 +94,11 @@ public class ViewServiceImpl implements ViewService {
             for (MineJButton b : button) {
                 int status = b.getStatus();
                 if (status == MineJButton.MINE && b.isFlag()) {
-                    b.setIcon(ButtonImage.getGameImageIcon(ButtonImage.sweepMineBufferedImage, b));
+                    b.setIcon(ComponentImage.getGameImageIcon(ComponentImage.sweepMineBufferedImage, b));
                 } else if (status == MineJButton.EXPLODE) {
-                    b.setIcon(ButtonImage.getGameImageIcon(ButtonImage.explodeMineBufferedImage, b));
+                    b.setIcon(ComponentImage.getGameImageIcon(ComponentImage.explodeMineBufferedImage, b));
                 } else if (status == MineJButton.MINE) {
-                    b.setIcon(ButtonImage.getGameImageIcon(ButtonImage.mineBufferedImage, b));
+                    b.setIcon(ComponentImage.getGameImageIcon(ComponentImage.mineBufferedImage, b));
                 }
             }
         }
@@ -108,20 +111,19 @@ public class ViewServiceImpl implements ViewService {
         }
 
         final int data = button.getData();
-        final GameNowStatus nowStatus = gameNowData.getNowStatus();
 
         if (button.getStatus() == MineJButton.MINE) {
-            nowStatus.setFail(true);
+            gameNowData.setFail(true);
             button.setStatus(MineJButton.EXPLODE);
             return true;
         }
 
-        nowStatus.setOpenSpace(nowStatus.getOpenSpace() + 1);
+        gameNowData.setOpenSpace(gameNowData.getOpenSpace() + 1);
         setButtonDisPlayStatus(button);
         if (data == 0) {
             openAroundSpace(button, gameNowData);
         } else {
-            button.setIcon(ButtonImage.getGameImageIcon(ButtonImage.numberBufferedImage[data - 1], button));
+            button.setIcon(ComponentImage.getGameImageIcon(ComponentImage.numberBufferedImage[data - 1], button));
         }
 
         removeButtonListener(button);
@@ -138,7 +140,7 @@ public class ViewServiceImpl implements ViewService {
             remainingMineNumberLabel.setText((Integer.parseInt(remainingMineNumberLabel.getText()) + 1) + "");
             button.setFlag(false);
         } else {
-            button.setIcon(ButtonImage.getGameImageIcon(ButtonImage.flagBufferedImage, button));
+            button.setIcon(ComponentImage.getGameImageIcon(ComponentImage.flagBufferedImage, button));
             remainingMineNumberLabel.setText((Integer.parseInt(remainingMineNumberLabel.getText()) - 1) + "");
             button.setFlag(true);
         }
@@ -158,12 +160,12 @@ public class ViewServiceImpl implements ViewService {
     }
 
     @Override
-    public void showDynamicTime(GameNowStatus gameNowStatus) {
+    public void showDynamicTime() {
         if (thread.get() == null) {
-            thread.set(new DynamicTime(viewComponent.getTimeLabel(), gameNowStatus));
+            thread.set(new DynamicTime(viewComponent.getTimeLabel()));
             new Thread(thread.get()).start();
         }
-        thread.get().setInitStatus(gameNowStatus);
+        thread.get().setInitStatus();
     }
 
     @Override
@@ -218,9 +220,9 @@ public class ViewServiceImpl implements ViewService {
     }
 
     @Override
-    public void addButtonsMouseListener(MineJButton[][] buttons) {
+    public void addButtonsMouseListener() {
         MouseListener listener = BaseHolder.getBean("mouseListener");
-        for (JButton[] button : buttons) {
+        for (JButton[] button : gameNowData.getButtons()) {
             for (JButton b : button) {
                 b.addMouseListener(listener);
             }
@@ -228,13 +230,56 @@ public class ViewServiceImpl implements ViewService {
     }
 
     @Override
-    public void removeButtonsListener(MineJButton[][] buttons) {
+    public void removeButtonsListener() {
         MouseListener listener = BaseHolder.getBean("mouseListener");
-        for (JButton[] button : buttons) {
+        for (JButton[] button : gameNowData.getButtons()) {
             for (JButton b : button) {
                 b.removeMouseListener(listener);
             }
         }
+    }
+
+    @Override
+    public void changeExpressionStatus() {
+        JLabel label = viewComponent.getExpressionLabel();
+        if (gameNowData.isFail()) {
+            label.setIcon(ComponentImage.angryImageIcon);
+        } else {
+            label.setIcon(ComponentImage.happyImageIcon);
+        }
+    }
+
+    @Override
+    public void setDefaultExpression() {
+        viewComponent.getExpressionLabel().setIcon(ComponentImage.confusedImageIcon);
+    }
+
+    @Override
+    public void setAllModelBestGameData(MineSweepingGameData[] allModelBestGameData) {
+        String[] playerName = new String[4];
+        String[] time = new String[4];
+        int i = 0;
+        for (MineSweepingGameData modelBestGameData : allModelBestGameData) {
+            if (modelBestGameData == null) {
+                playerName[i] = "-";
+                time[i] = "-";
+            } else {
+                playerName[i] = modelBestGameData.getPlayerName();
+                time[i] = modelBestGameData.getTime().toString()+"ms";
+            }
+            i++;
+        }
+        viewComponent.getEasyModelBestPlayerNameLabel().setText(playerName[0]);
+        viewComponent.getEasyModelBestTimeLabel().setText(time[0]);
+
+        viewComponent.getOrdinaryModelBestPlayerNameLabel().setText(playerName[1]);
+        viewComponent.getOrdinaryModelBestTimeLabel().setText(time[1]);
+
+        viewComponent.getHardModelBestPlayerNameLabel().setText(playerName[2]);
+        viewComponent.getHardModelBestTimeLabel().setText(time[2]);
+
+        viewComponent.getCustomizeModelBestPlayerNameLabel().setText(playerName[3]);
+        viewComponent.getCustomizeModelBestTimeLabel().setText(time[3]);
     }
 
     private void removeButtonListener(MineJButton button) {
@@ -269,28 +314,25 @@ public class ViewServiceImpl implements ViewService {
                     if (data == 0) {
                         openAroundSpace(mineJButton, gameNowData);
                     } else {
-                        mineJButton.setIcon(ButtonImage.getGameImageIcon(ButtonImage.numberBufferedImage[data - 1], mineJButton));
+                        mineJButton.setIcon(ComponentImage.getGameImageIcon(ComponentImage.numberBufferedImage[data - 1], mineJButton));
                     }
-                    gameNowData.getNowStatus().setOpenSpace(gameNowData.getNowStatus().getOpenSpace() + 1);
+                    gameNowData.setOpenSpace(gameNowData.getOpenSpace() + 1);
                 }
             }
         }
     }
 
-    private static class DynamicTime implements Runnable {
+    private class DynamicTime implements Runnable {
         private JLabel timeLabel;
         private int time;
-        private GameNowStatus gameNowStatus;
         private boolean flag;
 
-        public DynamicTime(JLabel timeLabel, GameNowStatus gameNowStatus) {
+        public DynamicTime(JLabel timeLabel) {
             this.timeLabel = timeLabel;
-            this.gameNowStatus = gameNowStatus;
         }
 
-        public void setInitStatus(GameNowStatus gameNowStatus) {
+        public void setInitStatus() {
             time = 0;
-            this.gameNowStatus = gameNowStatus;
             flag = false;
         }
 
@@ -300,7 +342,7 @@ public class ViewServiceImpl implements ViewService {
                 while (true) {
                     try {
                         //判断是否被中断
-                        if (gameNowStatus.isWin() || gameNowStatus.isFail()) {
+                        if (gameNowData.isWin() || gameNowData.isFail()) {
                             flag = true;
                             while (flag) {
                                 Thread.sleep(1000);

@@ -49,21 +49,22 @@ public class MineControllerImpl implements MineController {
     }
 
     @Override
-    public GameNowData newMineViewButtons() {
-        return mineService.newMineViewButtons();
+    public void newMineViewButtons() {
+        mineService.newMineViewButtons();
     }
 
     @Override
     public boolean openSpace(GameNowData gameNowData) {
         //选择合适地图，规避第一步就是雷
-        GameNowStatus nowStatus = gameNowData.getNowStatus();
         MineJButton button = BaseHolder.getBean("viewComponent", ViewComponent.class).getNowClickButton();
-        if (nowStatus.getOpenSpace() == 0) {
+        if (gameNowData.getOpenSpace() == 0) {
             mineService.fillMineData(button.getPoint(), gameNowData);
-            nowStatus.setStartTime(System.currentTimeMillis());
+            gameNowData.setStartTime(System.currentTimeMillis());
         }
-        if (viewService.openSpace(button, gameNowData) || nowStatus.isWin()) {
-            nowStatus.setEndTime(System.currentTimeMillis());
+        if (viewService.openSpace(button, gameNowData) || gameNowData.isWin()) {
+            gameNowData.setEndTime(System.currentTimeMillis());
+
+            viewService.changeExpressionStatus();
 
             viewService.loadRemainderButtonsIcon(gameNowData);
             MineSweepingGameData gameData = mineSweepingGameDataService.insert(gameNowData, mineService.getNowMineModel());
@@ -90,8 +91,8 @@ public class MineControllerImpl implements MineController {
     }
 
     @Override
-    public void showDynamicTime(GameNowStatus gameNowStatus) {
-        viewService.showDynamicTime(gameNowStatus);
+    public void showDynamicTime() {
+        viewService.showDynamicTime();
     }
 
     @Override
@@ -110,20 +111,31 @@ public class MineControllerImpl implements MineController {
     }
 
     @Override
-    public void addButtonsMouseListener(MineJButton[][] buttons) {
-        viewService.addButtonsMouseListener(buttons);
+    public void addButtonsMouseListener() {
+        viewService.addButtonsMouseListener();
     }
 
     @Override
-    public void removeButtonsListener(MineJButton[][] buttons) {
-        viewService.removeButtonsListener(buttons);
+    public void removeButtonsListener() {
+        viewService.removeButtonsListener();
     }
 
     @Override
     public void saveSettingData() {
-        if (mineService.saveSettingData() == null) {
+        if (mineService.saveSettingData() != null) {
             viewService.showInformation("保存成功！");
         }
+    }
+
+    @Override
+    public void setDefaultExpression() {
+        viewService.setDefaultExpression();
+    }
+
+    @Override
+    public void showLeaderboard() {
+        final MineSweepingGameData[] allModelBestGameData = mineSweepingGameDataService.findAllModelBestGameData();
+        viewService.setAllModelBestGameData(allModelBestGameData);
     }
 
 }

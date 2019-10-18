@@ -63,7 +63,7 @@ new FormModel {
 				} )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
 					"$columnSpecs": "0:1.0"
-					"$rowSpecs": "0, 0:1.0"
+					"$rowSpecs": "68, 0:1.0"
 					"$hGap": 5
 					"$vGap": 5
 					"$alignTop": true
@@ -295,6 +295,122 @@ new FormModel {
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "card4"
 				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
+					"$columnSpecs": "0:1.0"
+					"$rowSpecs": "50:1.0, 50:1.0, 50:1.0, 50:1.0"
+					"$hGap": 5
+					"$vGap": 5
+					"$alignTop": true
+					"$alignLeft": true
+				} ) {
+					name: "leaderboardPanel2"
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
+						"$columnSpecs": "0:1.0, 5, 0:1.0"
+						"$rowSpecs": "0:1.0"
+						"$alignTop": true
+						"$alignLeft": true
+					} ) {
+						name: "panel1"
+						"border": new javax.swing.border.TitledBorder( null, "简单", 2, 0, new java.awt.Font( "Microsoft YaHei UI", 0, 12 ), null )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "easyModelBestPlayerNameLabel"
+							"text": "text"
+							"horizontalAlignment": 0
+							"toolTipText": "简单模式用时最短的玩家名"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "easyModelBestTimeLabel"
+							"text": "text"
+							"horizontalAlignment": 0
+							"toolTipText": "简单模式用时最短的玩家名"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+							"gridx": 2
+						} )
+					}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
+						"$columnSpecs": "0:1.0, 0:1.0"
+						"$rowSpecs": "0:1.0"
+						"$hGap": 5
+						"$vGap": 5
+						"$alignLeft": true
+						"$alignTop": true
+					} ) {
+						name: "panel2"
+						"border": new javax.swing.border.TitledBorder( null, "普通", 2, 0 )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "ordinaryModelBestPlayerNameLabel"
+							"text": "text"
+							"horizontalAlignment": 0
+							"toolTipText": "普通模式用时最短的玩家名"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "ordinaryModelBestTimeLabel"
+							"text": "text"
+							"horizontalAlignment": 0
+							"toolTipText": "普通模式的最短用时"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+							"gridx": 1
+						} )
+					}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+						"gridy": 1
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
+						"$columnSpecs": "0:1.0, 0:1.0"
+						"$rowSpecs": "0:1.0"
+						"$hGap": 5
+						"$vGap": 5
+						"$alignLeft": true
+						"$alignTop": true
+					} ) {
+						name: "panel4"
+						"border": new javax.swing.border.TitledBorder( null, "困难", 2, 0 )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "hardModelBestPlayerNameLabel"
+							"text": "text"
+							"horizontalAlignment": 0
+							"toolTipText": "困难模式用时最短的玩家名"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "hardModelBestTimeLabel"
+							"text": "text"
+							"horizontalAlignment": 0
+							"toolTipText": "困难模式的最短用时"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+							"gridx": 1
+						} )
+					}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+						"gridy": 2
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
+						"$columnSpecs": "0:1.0, 0:1.0"
+						"$rowSpecs": "0:1.0"
+						"$hGap": 5
+						"$vGap": 5
+						"$alignLeft": true
+						"$alignTop": true
+					} ) {
+						name: "panel5"
+						"border": new javax.swing.border.TitledBorder( null, "自定义", 2, 0 )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "customizeModelBestPlayerNameLabel"
+							"text": "text"
+							"horizontalAlignment": 0
+							"toolTipText": "自定义模式用时最短的玩家名"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "customizeModelBestTimeLabel"
+							"text": "text"
+							"horizontalAlignment": 0
+							"toolTipText": "自定义模式的最短用时"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+							"gridx": 1
+						} )
+					}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+						"gridy": 3
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "card5"
+				} )
 			}, new FormLayoutConstraints( class java.lang.String ) {
 				"value": "Center"
 			} )
@@ -339,8 +455,14 @@ new FormModel {
 					"preferredSize": new java.awt.Dimension( 53, 27 )
 					add( new FormComponent( "javax.swing.JMenuItem" ) {
 						name: "menuItem3"
-						"text": "  查看"
+						"text": "  信息"
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "showHelpActionPerformed", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "menuItem5"
+						"text": " 排行榜"
+						"horizontalAlignment": 2
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "showLeaderboardActionPerformed", true ) )
 					} )
 				} )
 			}

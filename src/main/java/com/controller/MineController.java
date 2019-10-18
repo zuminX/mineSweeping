@@ -1,7 +1,6 @@
 package com.controller;
 
 import com.domain.GameNowData;
-import com.domain.GameNowStatus;
 import com.domain.MineJButton;
 import com.domain.MineModel;
 import com.view.MainWindow;
@@ -17,7 +16,7 @@ public interface MineController {
 
     void setWindowSize(MainWindow mainWindow, Dimension screenSize);
 
-    GameNowData newMineViewButtons();
+    void newMineViewButtons();
 
     boolean openSpace(GameNowData gameNowData);
 
@@ -25,7 +24,7 @@ public interface MineController {
 
     boolean reloadGameData(GameNowData gameNowData);
 
-    void showDynamicTime(GameNowStatus gameNowStatus);
+    void showDynamicTime();
 
     void initRemainingMineNumberLabel();
 
@@ -33,9 +32,13 @@ public interface MineController {
 
     void addButtonsToPanel(MineJButton[][] buttons);
 
-    void addButtonsMouseListener(MineJButton[][] buttons);
+    void addButtonsMouseListener();
 
-    void removeButtonsListener(MineJButton[][] buttons);
+    void removeButtonsListener();
 
     void saveSettingData();
+
+    void setDefaultExpression();
+
+    void showLeaderboard();
 }

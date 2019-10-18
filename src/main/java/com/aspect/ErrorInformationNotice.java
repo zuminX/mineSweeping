@@ -33,7 +33,7 @@ public class ErrorInformationNotice {
      *
      * @return 有异常->true 无异常->false
      */
-    @Around("execution(public * com.service.impl.*ServiceImpl.*(..))")
+    @Around("execution(public * com.service.impl.*ServiceImpl.*.*(..))")
     public Object ErrorInformationProcess(ProceedingJoinPoint proceedingJoinPoint) {
         Object returnValue = null;
         try {

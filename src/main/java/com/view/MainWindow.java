@@ -5,11 +5,11 @@
 package com.view;
 
 import com.domain.*;
+import com.jgoodies.forms.factories.*;
 import com.jgoodies.forms.factories.Borders;
 import com.controller.MineController;
+import com.jgoodies.forms.layout.*;
 import com.utils.BaseHolder;
-import com.utils.Information;
-import net.miginfocom.swing.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +30,7 @@ public class MainWindow extends JFrame {
     @Autowired
     private MineController mineController;
 
+    @Autowired
     private GameNowData gameNowData;
 
     @Autowired
@@ -39,6 +40,7 @@ public class MainWindow extends JFrame {
         initComponents();
 
         ViewComponent viewComponent = BaseHolder.getBean("viewComponent", ViewComponent.class);
+
         viewComponent.setMainPanel(mainPanel);
         viewComponent.setRemainingMineNumberLabel(remainingMineNumberLabel);
         viewComponent.setExpressionLabel(expressionLabel);
@@ -54,6 +56,14 @@ public class MainWindow extends JFrame {
         viewComponent.setMineDensityTextField(mineDensityTextField);
         viewComponent.setGameNameField(gameNameField);
         viewComponent.setOpenRecordCheckBox(openRecordCheckBox);
+        viewComponent.setEasyModelBestPlayerNameLabel(easyModelBestPlayerNameLabel);
+        viewComponent.setEasyModelBestTimeLabel(easyModelBestTimeLabel);
+        viewComponent.setOrdinaryModelBestPlayerNameLabel(ordinaryModelBestPlayerNameLabel);
+        viewComponent.setOrdinaryModelBestTimeLabel(ordinaryModelBestTimeLabel);
+        viewComponent.setHardModelBestPlayerNameLabel(hardModelBestPlayerNameLabel);
+        viewComponent.setHardModelBestTimeLabel(hardModelBestTimeLabel);
+        viewComponent.setCustomizeModelBestPlayerNameLabel(customizeModelBestPlayerNameLabel);
+        viewComponent.setCustomizeModelBestTimeLabel(customizeModelBestTimeLabel);
     }
 
     private void showGameActionPerformed(ActionEvent e) {
@@ -91,7 +101,7 @@ public class MainWindow extends JFrame {
         buttonsPanel.setLayout(new GridLayout(nowMineModel.getRow(), nowMineModel.getColumn()));
 
         //创建扫雷按钮组并增加监听器添加到面板中
-        gameNowData = mineController.newMineViewButtons();
+        mineController.newMineViewButtons();
         mineController.addButtonsToPanel(gameNowData.getButtons());
 
         //绘制扫雷按钮组面板
@@ -108,19 +118,23 @@ public class MainWindow extends JFrame {
     }
 
     private void cleanGameData() {
-        GameNowStatus nowStatus = gameNowData.getNowStatus();
+        mineController.removeButtonsListener();
 
-        mineController.removeButtonsListener(gameNowData.getButtons());
-
-        mineController.showDynamicTime(nowStatus);
+        mineController.showDynamicTime();
         mineController.initRemainingMineNumberLabel();
-        nowStatus.setInitStatus();
+        gameNowData.setInitStatus();
 
-        mineController.addButtonsMouseListener(gameNowData.getButtons());
+        mineController.addButtonsMouseListener();
+        mineController.setDefaultExpression();
     }
 
     private void saveButtonActionPerformed(ActionEvent e) {
         mineController.saveSettingData();
+    }
+
+    private void showLeaderboardActionPerformed(ActionEvent e) {
+        mineController.showLeaderboard();
+        ((CardLayout) mainPanel.getLayout()).show(mainPanel, "card5");
     }
 
     @Component("mouseListener")
@@ -133,7 +147,7 @@ public class MainWindow extends JFrame {
             if(e.getButton() == MouseEvent.BUTTON1)
             {
                 if (mineController.openSpace(gameNowData)) {
-                    mineController.removeButtonsListener(gameNowData.getButtons());
+                    mineController.removeButtonsListener();
                 }
             }
             //右键为设置旗帜
@@ -154,6 +168,7 @@ public class MainWindow extends JFrame {
         menuItem4 = new JMenuItem();
         menu2 = new JMenu();
         menuItem3 = new JMenuItem();
+        menuItem5 = new JMenuItem();
         mainPanel = new JPanel();
         gamePanel = new JPanel();
         panel3 = new JPanel();
@@ -192,6 +207,19 @@ public class MainWindow extends JFrame {
         label12 = new JLabel();
         label13 = new JLabel();
         label14 = new JLabel();
+        leaderboardPanel2 = new JPanel();
+        panel1 = new JPanel();
+        easyModelBestPlayerNameLabel = new JLabel();
+        easyModelBestTimeLabel = new JLabel();
+        panel2 = new JPanel();
+        ordinaryModelBestPlayerNameLabel = new JLabel();
+        ordinaryModelBestTimeLabel = new JLabel();
+        panel4 = new JPanel();
+        hardModelBestPlayerNameLabel = new JLabel();
+        hardModelBestTimeLabel = new JLabel();
+        panel5 = new JPanel();
+        customizeModelBestPlayerNameLabel = new JLabel();
+        customizeModelBestTimeLabel = new JLabel();
 
         //======== this ========
         setTitle("MineSweeping");
@@ -238,9 +266,15 @@ public class MainWindow extends JFrame {
                 menu2.setPreferredSize(new Dimension(53, 27));
 
                 //---- menuItem3 ----
-                menuItem3.setText("  \u67e5\u770b");
+                menuItem3.setText("  \u4fe1\u606f");
                 menuItem3.addActionListener(e -> showHelpActionPerformed(e));
                 menu2.add(menuItem3);
+
+                //---- menuItem5 ----
+                menuItem5.setText(" \u6392\u884c\u699c");
+                menuItem5.setHorizontalAlignment(SwingConstants.LEFT);
+                menuItem5.addActionListener(e -> showLeaderboardActionPerformed(e));
+                menu2.add(menuItem5);
             }
             menuBar1.add(menu2);
         }
@@ -330,7 +364,7 @@ public class MainWindow extends JFrame {
             {
                 settingPanel.setLayout(new GridBagLayout());
                 ((GridBagLayout)settingPanel.getLayout()).columnWidths = new int[] {0, 0};
-                ((GridBagLayout)settingPanel.getLayout()).rowHeights = new int[] {0, 0, 0};
+                ((GridBagLayout)settingPanel.getLayout()).rowHeights = new int[] {73, 0, 0};
                 ((GridBagLayout)settingPanel.getLayout()).columnWeights = new double[] {1.0, 1.0E-4};
                 ((GridBagLayout)settingPanel.getLayout()).rowWeights = new double[] {0.0, 1.0, 1.0E-4};
 
@@ -559,6 +593,133 @@ public class MainWindow extends JFrame {
                     new Insets(0, 0, 0, 0), 0, 0));
             }
             mainPanel.add(helpPanel, "card4");
+
+            //======== leaderboardPanel2 ========
+            {
+                leaderboardPanel2.setLayout(new GridBagLayout());
+                ((GridBagLayout)leaderboardPanel2.getLayout()).columnWidths = new int[] {0, 0};
+                ((GridBagLayout)leaderboardPanel2.getLayout()).rowHeights = new int[] {55, 55, 55, 50, 0};
+                ((GridBagLayout)leaderboardPanel2.getLayout()).columnWeights = new double[] {1.0, 1.0E-4};
+                ((GridBagLayout)leaderboardPanel2.getLayout()).rowWeights = new double[] {1.0, 1.0, 1.0, 1.0, 1.0E-4};
+
+                //======== panel1 ========
+                {
+                    panel1.setBorder(new TitledBorder(null, "\u7b80\u5355", TitledBorder.CENTER, TitledBorder.DEFAULT_POSITION,
+                        new Font("Microsoft YaHei UI", Font.PLAIN, 12)));
+                    panel1.setLayout(new GridBagLayout());
+                    ((GridBagLayout)panel1.getLayout()).columnWidths = new int[] {0, 5, 0, 0};
+                    ((GridBagLayout)panel1.getLayout()).rowHeights = new int[] {0, 0};
+                    ((GridBagLayout)panel1.getLayout()).columnWeights = new double[] {1.0, 0.0, 1.0, 1.0E-4};
+                    ((GridBagLayout)panel1.getLayout()).rowWeights = new double[] {1.0, 1.0E-4};
+
+                    //---- easyModelBestPlayerNameLabel ----
+                    easyModelBestPlayerNameLabel.setText("text");
+                    easyModelBestPlayerNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                    easyModelBestPlayerNameLabel.setToolTipText("\u7b80\u5355\u6a21\u5f0f\u7528\u65f6\u6700\u77ed\u7684\u73a9\u5bb6\u540d");
+                    panel1.add(easyModelBestPlayerNameLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
+                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                        new Insets(0, 0, 0, 0), 0, 0));
+
+                    //---- easyModelBestTimeLabel ----
+                    easyModelBestTimeLabel.setText("text");
+                    easyModelBestTimeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                    easyModelBestTimeLabel.setToolTipText("\u7b80\u5355\u6a21\u5f0f\u7528\u65f6\u6700\u77ed\u7684\u73a9\u5bb6\u540d");
+                    panel1.add(easyModelBestTimeLabel, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0,
+                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                        new Insets(0, 0, 0, 0), 0, 0));
+                }
+                leaderboardPanel2.add(panel1, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
+                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                    new Insets(0, 0, 5, 0), 0, 0));
+
+                //======== panel2 ========
+                {
+                    panel2.setBorder(new TitledBorder(null, "\u666e\u901a", TitledBorder.CENTER, TitledBorder.DEFAULT_POSITION));
+                    panel2.setLayout(new GridBagLayout());
+                    ((GridBagLayout)panel2.getLayout()).columnWidths = new int[] {0, 0, 0};
+                    ((GridBagLayout)panel2.getLayout()).rowHeights = new int[] {0, 0};
+                    ((GridBagLayout)panel2.getLayout()).columnWeights = new double[] {1.0, 1.0, 1.0E-4};
+                    ((GridBagLayout)panel2.getLayout()).rowWeights = new double[] {1.0, 1.0E-4};
+
+                    //---- ordinaryModelBestPlayerNameLabel ----
+                    ordinaryModelBestPlayerNameLabel.setText("text");
+                    ordinaryModelBestPlayerNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                    ordinaryModelBestPlayerNameLabel.setToolTipText("\u666e\u901a\u6a21\u5f0f\u7528\u65f6\u6700\u77ed\u7684\u73a9\u5bb6\u540d");
+                    panel2.add(ordinaryModelBestPlayerNameLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
+                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                        new Insets(0, 0, 0, 5), 0, 0));
+
+                    //---- ordinaryModelBestTimeLabel ----
+                    ordinaryModelBestTimeLabel.setText("text");
+                    ordinaryModelBestTimeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                    ordinaryModelBestTimeLabel.setToolTipText("\u666e\u901a\u6a21\u5f0f\u7684\u6700\u77ed\u7528\u65f6");
+                    panel2.add(ordinaryModelBestTimeLabel, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
+                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                        new Insets(0, 0, 0, 0), 0, 0));
+                }
+                leaderboardPanel2.add(panel2, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
+                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                    new Insets(0, 0, 5, 0), 0, 0));
+
+                //======== panel4 ========
+                {
+                    panel4.setBorder(new TitledBorder(null, "\u56f0\u96be", TitledBorder.CENTER, TitledBorder.DEFAULT_POSITION));
+                    panel4.setLayout(new GridBagLayout());
+                    ((GridBagLayout)panel4.getLayout()).columnWidths = new int[] {0, 0, 0};
+                    ((GridBagLayout)panel4.getLayout()).rowHeights = new int[] {0, 0};
+                    ((GridBagLayout)panel4.getLayout()).columnWeights = new double[] {1.0, 1.0, 1.0E-4};
+                    ((GridBagLayout)panel4.getLayout()).rowWeights = new double[] {1.0, 1.0E-4};
+
+                    //---- hardModelBestPlayerNameLabel ----
+                    hardModelBestPlayerNameLabel.setText("text");
+                    hardModelBestPlayerNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                    hardModelBestPlayerNameLabel.setToolTipText("\u56f0\u96be\u6a21\u5f0f\u7528\u65f6\u6700\u77ed\u7684\u73a9\u5bb6\u540d");
+                    panel4.add(hardModelBestPlayerNameLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
+                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                        new Insets(0, 0, 0, 5), 0, 0));
+
+                    //---- hardModelBestTimeLabel ----
+                    hardModelBestTimeLabel.setText("text");
+                    hardModelBestTimeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                    hardModelBestTimeLabel.setToolTipText("\u56f0\u96be\u6a21\u5f0f\u7684\u6700\u77ed\u7528\u65f6");
+                    panel4.add(hardModelBestTimeLabel, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
+                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                        new Insets(0, 0, 0, 0), 0, 0));
+                }
+                leaderboardPanel2.add(panel4, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0,
+                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                    new Insets(0, 0, 5, 0), 0, 0));
+
+                //======== panel5 ========
+                {
+                    panel5.setBorder(new TitledBorder(null, "\u81ea\u5b9a\u4e49", TitledBorder.CENTER, TitledBorder.DEFAULT_POSITION));
+                    panel5.setLayout(new GridBagLayout());
+                    ((GridBagLayout)panel5.getLayout()).columnWidths = new int[] {0, 0, 0};
+                    ((GridBagLayout)panel5.getLayout()).rowHeights = new int[] {0, 0};
+                    ((GridBagLayout)panel5.getLayout()).columnWeights = new double[] {1.0, 1.0, 1.0E-4};
+                    ((GridBagLayout)panel5.getLayout()).rowWeights = new double[] {1.0, 1.0E-4};
+
+                    //---- customizeModelBestPlayerNameLabel ----
+                    customizeModelBestPlayerNameLabel.setText("text");
+                    customizeModelBestPlayerNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                    customizeModelBestPlayerNameLabel.setToolTipText("\u81ea\u5b9a\u4e49\u6a21\u5f0f\u7528\u65f6\u6700\u77ed\u7684\u73a9\u5bb6\u540d");
+                    panel5.add(customizeModelBestPlayerNameLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
+                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                        new Insets(0, 0, 0, 5), 0, 0));
+
+                    //---- customizeModelBestTimeLabel ----
+                    customizeModelBestTimeLabel.setText("text");
+                    customizeModelBestTimeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                    customizeModelBestTimeLabel.setToolTipText("\u81ea\u5b9a\u4e49\u6a21\u5f0f\u7684\u6700\u77ed\u7528\u65f6");
+                    panel5.add(customizeModelBestTimeLabel, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
+                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                        new Insets(0, 0, 0, 0), 0, 0));
+                }
+                leaderboardPanel2.add(panel5, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0,
+                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                    new Insets(0, 0, 0, 0), 0, 0));
+            }
+            mainPanel.add(leaderboardPanel2, "card5");
         }
         contentPane.add(mainPanel, BorderLayout.CENTER);
         setSize(400, 355);
@@ -583,6 +744,7 @@ public class MainWindow extends JFrame {
     private JMenuItem menuItem4;
     private JMenu menu2;
     private JMenuItem menuItem3;
+    private JMenuItem menuItem5;
     private JPanel mainPanel;
     private JPanel gamePanel;
     private JPanel panel3;
@@ -621,5 +783,18 @@ public class MainWindow extends JFrame {
     private JLabel label12;
     private JLabel label13;
     private JLabel label14;
+    private JPanel leaderboardPanel2;
+    private JPanel panel1;
+    private JLabel easyModelBestPlayerNameLabel;
+    private JLabel easyModelBestTimeLabel;
+    private JPanel panel2;
+    private JLabel ordinaryModelBestPlayerNameLabel;
+    private JLabel ordinaryModelBestTimeLabel;
+    private JPanel panel4;
+    private JLabel hardModelBestPlayerNameLabel;
+    private JLabel hardModelBestTimeLabel;
+    private JPanel panel5;
+    private JLabel customizeModelBestPlayerNameLabel;
+    private JLabel customizeModelBestTimeLabel;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }

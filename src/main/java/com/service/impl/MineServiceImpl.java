@@ -23,8 +23,10 @@ public class MineServiceImpl implements MineService {
     @Autowired
     private ViewComponent viewComponent;
 
+    @Autowired
+    private GameNowData gameNowData;
+
     private Mine mine = new Mine();
-    private Preload preload = new Preload();
 
     private Queue<MineData> minePreloadData = new ConcurrentLinkedQueue<>();
 
@@ -62,7 +64,7 @@ public class MineServiceImpl implements MineService {
     }
 
     @Override
-    public GameNowData newMineViewButtons() {
+    public void newMineViewButtons() {
         final MineModel nowMineModel = getNowMineModel();
         final Integer row = nowMineModel.getRow();
         final Integer column = nowMineModel.getColumn();
@@ -75,7 +77,9 @@ public class MineServiceImpl implements MineService {
                 mineJButtons[i][j].setPoint(new Point(i, j));
             }
         }
-        return new GameNowData(mineJButtons, new GameNowStatus(nowMineModel.getMineNumber(), row * column));
+        gameNowData.setButtons(mineJButtons);
+        gameNowData.setMineNumber(nowMineModel.getMineNumber());
+        gameNowData.setSpace(row * column);
     }
 
     @Override
@@ -208,7 +212,8 @@ public class MineServiceImpl implements MineService {
                         minePreloadData = new ConcurrentLinkedQueue<>();
                         oldMineModel = nowMineModel;
                     }
-                    while (minePreloadData.size() < 10) {
+                    final int size = Math.max((int) (Math.pow(nowMineModel.getMineDensity() * 10, 3)), 8);
+                    while (minePreloadData.size() < size) {
                         minePreloadData.offer(newMineData());
                     }
                     Thread.sleep(5000);

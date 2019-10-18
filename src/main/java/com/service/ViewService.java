@@ -28,7 +28,7 @@ public interface ViewService {
 
     void cleanViewData(GameNowData gameNowData);
 
-    void showDynamicTime(GameNowStatus gameNowStatus);
+    void showDynamicTime();
 
     void initRemainingMineNumberLabel(MineModel nowMineModel);
 
@@ -38,7 +38,13 @@ public interface ViewService {
 
     void addButtonsToPanel(MineJButton[][] buttons);
 
-    void addButtonsMouseListener(MineJButton[][] buttons);
+    void addButtonsMouseListener();
 
-    void removeButtonsListener(MineJButton[][] buttons);
+    void removeButtonsListener();
+
+    void changeExpressionStatus();
+
+    void setDefaultExpression();
+
+    void setAllModelBestGameData(MineSweepingGameData[] allModelBestGameData);
 }

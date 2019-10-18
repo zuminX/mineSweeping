@@ -12,7 +12,7 @@ public interface MineService {
 
     MineModel getNowMineModel();
 
-    GameNowData newMineViewButtons();
+    void newMineViewButtons();
 
     void fillMineData(Point point, GameNowData gameNowData);
 

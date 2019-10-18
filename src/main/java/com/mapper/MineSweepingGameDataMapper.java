@@ -14,4 +14,7 @@ public interface MineSweepingGameDataMapper {
     List<MineSweepingGameData> findByPlayerName(@Param("playerName") String playerName);
 
     List<MineSweepingGameData> findByPlayerNameAndModelName(@Param("playerName") String playerName, @Param("modelName") String modelName);
+
+    MineSweepingGameData findByModelNameOrderByTime(@Param("modelName")String modelName);
+
 }
