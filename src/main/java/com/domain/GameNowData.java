@@ -1,82 +1,57 @@
 package com.domain;
 
+import lombok.Data;
 import org.springframework.stereotype.Component;
 
+/**
+ * 当前游戏模式数据
+ */
 @Component("gameNowData")
+@Data
 public class GameNowData {
+    /**
+     * 扫雷游戏按钮组
+     */
     private MineJButton[][] buttons;
+    /**
+     * 开始时间
+     */
     private long startTime;
+    /**
+     * 结束时间
+     */
     private long endTime;
+    /**
+     * 打开的方格数
+     */
     private int openSpace;
+    /**
+     * 地雷个数
+     */
     private int mineNumber;
+    /**
+     * 方块数
+     */
     private int space;
+    /**
+     * 是否失败
+     */
     private boolean isFail;
 
-    public GameNowData() {
-    }
-
-    public MineJButton[][] getButtons() {
-        return buttons;
-    }
-
-    public void setButtons(MineJButton[][] buttons) {
-        this.buttons = buttons;
-    }
-
+    /**
+     * 设置初始化状态
+     */
     public void setInitStatus() {
         isFail = false;
         openSpace = 0;
     }
 
+    /**
+     * 当打开空格数等于地图所有空格数减地雷数即为游戏胜利
+     *
+     * @return 胜利->true 失败->false
+     */
     public boolean isWin() {
         return space - mineNumber == openSpace;
-    }
-
-    public int getSpace() {
-        return space;
-    }
-
-    public void setSpace(int space) {
-        this.space = space;
-    }
-
-    public long getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(long startTime) {
-        this.startTime = startTime;
-    }
-
-    public long getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(long endTime) {
-        this.endTime = endTime;
-    }
-
-    public int getOpenSpace() {
-        return openSpace;
-    }
-
-    public void setOpenSpace(int openSpace) {
-        this.openSpace = openSpace;
-    }
-
-    public boolean isFail() {
-        return isFail;
-    }
-
-    public void setFail(boolean fail) {
-        isFail = fail;
-    }
-
-    public int getMineNumber() {
-        return mineNumber;
-    }
-
-    public void setMineNumber(int mineNumber) {
-        this.mineNumber = mineNumber;
     }
 }

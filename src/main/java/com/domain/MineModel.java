@@ -1,74 +1,39 @@
 package com.domain;
 
-import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+/**
+ * 封装扫雷模式的数据
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class MineModel {
-    private Integer row;
-    private Integer column;
-    private Integer mineNumber;
-    private String  name;
+    /**
+     * 行数
+     */
+    private int row;
+    /**
+     * 列数
+     */
+    private int column;
+    /**
+     * 地雷个数
+     */
+    private int mineNumber;
+    /**
+     * 模式名称
+     */
+    private String name;
 
-    public MineModel() {
-    }
-
-    public MineModel(Integer row, Integer column, Integer mineNumber, String name) {
-        this.row = row;
-        this.column = column;
-        this.mineNumber = mineNumber;
-        this.name = name;
-    }
-
-    public Integer getRow() {
-        return row;
-    }
-
-    public void setRow(Integer row) {
-        this.row = row;
-    }
-
-    public Integer getColumn() {
-        return column;
-    }
-
-    public void setColumn(Integer column) {
-        this.column = column;
-    }
-
-    public Integer getMineNumber() {
-        return mineNumber;
-    }
-
-    public void setMineNumber(Integer mineNumber) {
-        this.mineNumber = mineNumber;
-    }
-
-    public Double getMineDensity() {
-        return Double.valueOf(mineNumber) / (row * column);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        MineModel model = (MineModel) o;
-        return Objects.equals(row, model.row) && Objects.equals(column, model.column) && Objects.equals(mineNumber, model.mineNumber) &&
-               Objects.equals(name, model.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(row, column, mineNumber, name);
+    /**
+     * 获取该模式地雷的密度
+     *
+     * @return 密度
+     */
+    public double getMineDensity() {
+        return (double) mineNumber / (row * column);
     }
 }

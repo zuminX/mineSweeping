@@ -7,16 +7,42 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * 游戏结束后的对话框
+ */
 public class GameOverDialog extends JDialog {
-
+    /**
+     * 当前游戏时间的标签
+     */
     private JLabel nowGameTimeLabel;
+    /**
+     * 胜利次数的标签
+     */
     private JLabel winsNumberLabel;
+    /**
+     * 平均胜率的标签
+     */
     private JLabel averageWinPercentageLabel;
+    /**
+     * 失败次数的标签
+     */
     private JLabel failNumberLabel;
+    /**
+     * 平均用时的标签
+     */
     private JLabel averageTimePercentageLabel;
+    /**
+     * 所有游戏次数的标签
+     */
     private JLabel allGameNumberLabel;
+    /**
+     * 最短用时的标签
+     */
     private JLabel shortestTimeLabel;
 
+    /**
+     * 初始化对话框
+     */
     public GameOverDialog() {
         super(JOptionPane.getRootFrame());
 
@@ -108,24 +134,18 @@ public class GameOverDialog extends JDialog {
         this.setLocationRelativeTo(this.getOwner());
     }
 
-    public void initShowData(String nowGameTime, String winsNumber, String failNumber, String allGameNumber, String averageWinPercentage,
-                             String averageTimePercentage, String shortestTime) {
-        nowGameTimeLabel.setText(nowGameTime);
-        winsNumberLabel.setText(winsNumber);
-        failNumberLabel.setText(failNumber);
-        allGameNumberLabel.setText(allGameNumber);
-        averageWinPercentageLabel.setText(averageWinPercentage);
-        averageTimePercentageLabel.setText(averageTimePercentage);
-        shortestTimeLabel.setText(shortestTime);
-    }
-
+    /**
+     * 初始化对话框数据
+     *
+     * @param data 对话框数据
+     */
     public void initShowData(@NotNull GameOverDialogData data) {
         nowGameTimeLabel.setText(data.getNowGameTime());
         winsNumberLabel.setText(data.getWinsNumber());
         failNumberLabel.setText(data.getFailNumber());
         allGameNumberLabel.setText(data.getAllGameNumber());
         averageWinPercentageLabel.setText(data.getAverageWinPercentage());
-        averageTimePercentageLabel.setText(data.getAverageTimePercentage());
+        averageTimePercentageLabel.setText(data.getAverageTime());
         shortestTimeLabel.setText(data.getShortestTime());
     }
 

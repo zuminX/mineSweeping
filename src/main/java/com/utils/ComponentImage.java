@@ -7,36 +7,108 @@ import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+/**
+ * 组件的图片
+ */
 public class ComponentImage {
+    /**
+     * 地雷图片
+     */
     public static BufferedImage mineBufferedImage;
+    /**
+     * 旗帜图片
+     */
     public static BufferedImage flagBufferedImage;
+    /**
+     * 爆炸地雷图片
+     */
     public static BufferedImage explodeMineBufferedImage;
+    /**
+     * 将雷扫除的图片
+     */
     public static BufferedImage sweepMineBufferedImage;
+    /**
+     * 显示方块的图片
+     */
+    public static BufferedImage displaySpaceMineBufferedImage;
+    /**
+     * 隐藏方块的图片
+     */
+    public static BufferedImage hideSpaceMineBufferedImage;
+    /**
+     * 数字图片
+     */
     public static BufferedImage[] numberBufferedImage;
-    public static ImageIcon confusedImageIcon;
-    public static ImageIcon angryImageIcon;
-    public static ImageIcon happyImageIcon;
+    /**
+     * 默认表情
+     */
+    public static BufferedImage confusedBufferedImage;
+    /**
+     * 游戏失败的表情
+     */
+    public static BufferedImage angryBufferedImage;
+    /**
+     * 游戏胜利的表情
+     */
+    public static BufferedImage happyBufferedImage;
 
+    //加载图片
     static {
         try {
-            mineBufferedImage = ImageIO.read(new FileInputStream(ComponentImage.class.getResource("/image/mine.png").getPath()));
-            flagBufferedImage = ImageIO.read(new FileInputStream(ComponentImage.class.getResource("/image/flag.png").getPath()));
-            explodeMineBufferedImage = ImageIO.read(new FileInputStream(ComponentImage.class.getResource("/image/explodeMine.png").getPath()));
-            sweepMineBufferedImage = ImageIO.read(new FileInputStream(ComponentImage.class.getResource("/image/sweepMine.png").getPath()));
+            mineBufferedImage = getIconBufferImage("/image/mine.png");
+            flagBufferedImage = getIconBufferImage("/image/flag.png");
+            explodeMineBufferedImage = getIconBufferImage("/image/explodeMine.png");
+            sweepMineBufferedImage = getIconBufferImage("/image/sweepMine.png");
+            displaySpaceMineBufferedImage = getIconBufferImage("/image/displaySpace.png");
+            hideSpaceMineBufferedImage = getIconBufferImage("/image/hideSpace.png");
             numberBufferedImage = new BufferedImage[8];
             for (int i = 0; i < numberBufferedImage.length; i++) {
-                numberBufferedImage[i] = ImageIO.read(new FileInputStream(ComponentImage.class.getResource("/image/" + (i + 1) + ".png").getPath()));
+                numberBufferedImage[i] = getIconBufferImage("/image/" + (i + 1) + ".png");
             }
-            confusedImageIcon = new ImageIcon(ComponentImage.class.getResource("/image/confused.png"));
-            angryImageIcon = new ImageIcon(ComponentImage.class.getResource("/image/angry.png"));
-            happyImageIcon = new ImageIcon(ComponentImage.class.getResource("/image/happy.png"));
-
+            confusedBufferedImage = getIconBufferImage("/image/confused.png");
+            angryBufferedImage = getIconBufferImage("/image/angry.png");
+            happyBufferedImage = getIconBufferImage("/image/happy.png");
         } catch (IOException e) {
-            e.printStackTrace();
+            //若有异常则抛出初始化异常的错误
+            throw new ExceptionInInitializerError(e);
         }
     }
 
-    public static ImageIcon getGameImageIcon(BufferedImage bufferedImage, JButton button) {
-        return new ImageIcon(bufferedImage.getScaledInstance(button.getWidth(), button.getHeight(), Image.SCALE_DEFAULT));
+    /**
+     * 获取指定文件路径下的缓冲图像
+     *
+     * @param path 文件路径
+     *
+     * @return 缓冲图像
+     *
+     * @throws IOException I/O流异常
+     */
+    private static BufferedImage getIconBufferImage(String path) throws IOException {
+        return ImageIO.read(new FileInputStream(ComponentImage.class.getResource(path).getPath()));
     }
+
+    /**
+     * 获取填满该组件大小的图像
+     *
+     * @param bufferedImage 缓冲图像
+     * @param jComponent    组件
+     *
+     * @return 图像
+     */
+    public static ImageIcon getGameImageIcon(BufferedImage bufferedImage, JComponent jComponent) {
+        return new ImageIcon(bufferedImage.getScaledInstance(jComponent.getWidth(), jComponent.getHeight(), Image.SCALE_DEFAULT));
+    }
+
+    /**
+     * 获取指定大小的图像
+     *
+     * @param bufferedImage 缓冲图像
+     * @param dimension     大小
+     *
+     * @return 图像
+     */
+    public static ImageIcon getGameImageIcon(BufferedImage bufferedImage, Dimension dimension) {
+        return new ImageIcon(bufferedImage.getScaledInstance((int) dimension.getWidth(), (int) dimension.getHeight(), Image.SCALE_DEFAULT));
+    }
+
 }

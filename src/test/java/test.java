@@ -1,27 +1,30 @@
-import com.domain.MineSweepingGameData;
-import com.domain.MineSweepingModelData;
-import com.mapper.MineSweepingGameDataMapper;
+import com.domain.MineJButton;
+import com.utils.ComponentImage;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.annotation.Resource;
+import java.util.Arrays;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = "applicationContext.xml")
 public class test {
-
-    @Resource
-    private MineSweepingGameDataMapper mineSweepingGameDataMapper;
 
     @Test
     public void test1() {
-        MineSweepingGameData gameData = new MineSweepingGameData();
-        MineSweepingModelData modelData = new MineSweepingModelData();
-
-        gameData.setIsWin((byte) 0);
-        gameData.setPlayerName("测试");
-
-        modelData.setModelId(1);
-
-        gameData.setMineSweepingModelData(modelData);
-
-        mineSweepingGameDataMapper.insert(gameData);
+        MineJButton[][] buttons = new MineJButton[10][];
+        for (MineJButton[] button : buttons) {
+            button = new MineJButton[10];
+            for (MineJButton mineJButton : button) {
+                mineJButton = new MineJButton();
+                mineJButton.setSize(50, 50);
+            }
+        }
+        Arrays.stream(buttons)
+                .parallel()
+                .forEach(mineJButtons -> Arrays.stream(mineJButtons)
+                        .forEach(mineJButton -> mineJButton.setIcon(
+                                ComponentImage.getGameImageIcon(ComponentImage.hideSpaceMineBufferedImage, mineJButton))));
     }
 }

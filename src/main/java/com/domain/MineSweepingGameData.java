@@ -1,69 +1,36 @@
 package com.domain;
 
+import lombok.Data;
+
 import java.io.Serializable;
 
+/**
+ * 封装一局扫雷游戏数据
+ * 写入数据库中
+ */
+@Data
 public class MineSweepingGameData implements Serializable {
+    private static final long serialVersionUID = 1L;
     /**
      * 数据的id
      */
     private Integer dataId;
-
     /**
-     * 玩家名
+     * 玩家名称
      */
     private String playerName;
-
     /**
      * 游戏时间
      */
     private Long time;
-
     /**
      * 是否获胜
      */
     private Byte isWin;
-
+    /**
+     * 扫雷模式
+     * 建立多对一关系
+     */
     private MineSweepingModelData mineSweepingModelData;
 
-    private static final long serialVersionUID = 1L;
-
-    public MineSweepingModelData getMineSweepingModelData() {
-        return mineSweepingModelData;
-    }
-
-    public void setMineSweepingModelData(MineSweepingModelData mineSweepingModelData) {
-        this.mineSweepingModelData = mineSweepingModelData;
-    }
-
-    public Integer getDataId() {
-        return dataId;
-    }
-
-    public void setDataId(Integer dataId) {
-        this.dataId = dataId;
-    }
-
-    public String getPlayerName() {
-        return playerName;
-    }
-
-    public void setPlayerName(String playerName) {
-        this.playerName = playerName;
-    }
-
-    public Long getTime() {
-        return time;
-    }
-
-    public void setTime(Long time) {
-        this.time = time;
-    }
-
-    public Byte getIsWin() {
-        return isWin;
-    }
-
-    public void setIsWin(Byte isWin) {
-        this.isWin = isWin;
-    }
 }

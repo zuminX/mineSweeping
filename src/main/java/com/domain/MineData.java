@@ -1,32 +1,22 @@
 package com.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 import java.util.Set;
 
+/**
+ * 地雷数据
+ */
+@Data
+@AllArgsConstructor
 public class MineData {
+    /**
+     * 地雷二维点的集合
+     */
     private Set<Point> minePoint;
+    /**
+     * 扫雷游戏每一格的数据
+     */
     private int[][] data;
-
-    public MineData() {
-    }
-
-    public MineData(Set<Point> minePoint, int[][] data) {
-        this.minePoint = minePoint;
-        this.data = data;
-    }
-
-    public Set<Point> getMinePoint() {
-        return minePoint;
-    }
-
-    public void setMinePoint(Set<Point> minePoint) {
-        this.minePoint = minePoint;
-    }
-
-    public int[][] getData() {
-        return data;
-    }
-
-    public void setData(int[][] data) {
-        this.data = data;
-    }
 }

@@ -56,6 +56,7 @@
         select
         *
         from mine_sweeping_game_data game inner join mine_sweeping_model_data model
-        on game.model_id=model.model_id AND game.is_win = 1 AND model.model_name=#{modelName,jdbcType=VARCHAR} order by `time` limit 1
+        on game.model_id=model.model_id AND game.is_win = 1 AND model.model_name=#{modelName,jdbcType=VARCHAR} order by
+        `time` limit 1
     </select>
 </mapper>

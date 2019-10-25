@@ -5,7 +5,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 /**
- * 存放迷宫提示信息的类
+ * 存放扫雷游戏信息的类
  */
 @Component
 @PropertySource(value = "classpath:properties/information.properties", encoding = "utf-8")
@@ -17,6 +17,8 @@ public class Information {
     public static String loadPlayerDataSettingError;
     public static String loadGameDataError;
     public static String playerDataError;
+    public static String saveDataSucceed;
+    public static String showNowTimeError;
     public static String helpGame1;
     public static String helpGame2;
     public static String helpGame3;
@@ -117,5 +119,15 @@ public class Information {
     @Value("${title.fail}")
     public void setTitleFail(String titleFail) {
         Information.titleFail = titleFail;
+    }
+
+    @Value("${information.saveDataSucceed}")
+    public void setSaveDataSucceed(String saveDataSucceed) {
+        Information.saveDataSucceed = saveDataSucceed;
+    }
+
+    @Value("${information.showNowTimeError}")
+    public void setShowNowTimeError(String showNowTimeError) {
+        Information.showNowTimeError = showNowTimeError;
     }
 }

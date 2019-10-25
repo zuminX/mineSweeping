@@ -1,89 +1,46 @@
 package com.domain;
 
+import lombok.Data;
+
 import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * 封装扫雷模式数据
+ * 写入数据库中
+ */
+@Data
 public class MineSweepingModelData implements Serializable {
+    private static final long serialVersionUID = 1L;
     /**
-     * modelId
+     * 模式的id
      */
     private Integer modelId;
-
     /**
      * 扫雷地图的行
      */
     private Integer row;
-
     /**
      * 扫雷地图的列
      */
     private Integer column;
-
     /**
      * 地雷个数
      */
     private Integer mineNumber;
-
     /**
      * 模式名称
      */
     private String modelName;
 
-    @Transient
-    private Set<MineSweepingGameData> mineSweepingGameDataSet = new HashSet<>();
-
-    private static final long serialVersionUID = 1L;
-
-    public Integer getModelId() {
-        return modelId;
-    }
-
-    public void setModelId(Integer modelId) {
-        this.modelId = modelId;
-    }
-
-    public Integer getRow() {
-        return row;
-    }
-
-    public void setRow(Integer row) {
-        this.row = row;
-    }
-
-    public Integer getColumn() {
-        return column;
-    }
-
-    public void setColumn(Integer column) {
-        this.column = column;
-    }
-
-    public Integer getMineNumber() {
-        return mineNumber;
-    }
-
-    public void setMineNumber(Integer mineNumber) {
-        this.mineNumber = mineNumber;
-    }
-
-    public String getModelName() {
-        return modelName;
-    }
-
-    public void setModelName(String modelName) {
-        this.modelName = modelName;
-    }
-
-    public Set<MineSweepingGameData> getMineSweepingGameDataSet() {
-        return mineSweepingGameDataSet;
-    }
-
-    public void setMineSweepingGameDataSet(Set<MineSweepingGameData> mineSweepingGameDataSet) {
-        this.mineSweepingGameDataSet = mineSweepingGameDataSet;
-    }
+    /**
+     * 扫雷游戏数据
+     * 建立一对多关系
+     */
+    private final Set<MineSweepingGameData> mineSweepingGameDataSet = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {
@@ -94,7 +51,8 @@ public class MineSweepingModelData implements Serializable {
             return false;
         }
         MineSweepingModelData that = (MineSweepingModelData) o;
-        return row.equals(that.row) && column.equals(that.column) && mineNumber.equals(that.mineNumber) && modelName.equals(that.modelName);
+        return Objects.equals(row, that.row) && Objects.equals(column, that.column) && Objects.equals(mineNumber, that.mineNumber) &&
+               Objects.equals(modelName, that.modelName);
     }
 
     @Override

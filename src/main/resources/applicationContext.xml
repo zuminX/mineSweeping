@@ -23,7 +23,7 @@
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <!-- 注入数据库连接池 -->
         <property name="dataSource" ref="dataSource"/>
-        <!-- 配置MyBaties全局配置文件:mybatis-config.xml -->
+        <!-- 配置mybatis全局配置文件:mybatis-config.xml -->
         <property name="configLocation" value="classpath:mybatis-config.xml"/>
         <!-- 扫描sql配置文件:mapper需要的xml文件 -->
         <property name="mapperLocations" value="classpath:mapperxml/*.xml"/>
@@ -38,6 +38,19 @@
     </bean>
 
     <bean id="properties" class="java.util.Properties"/>
+
+    <bean id="highDecimalFormat" class="java.text.DecimalFormat">
+        <constructor-arg name="pattern" value="0.000000"/>
+    </bean>
+    <bean id="lowDecimalFormat" class="java.text.DecimalFormat">
+        <constructor-arg name="pattern" value="0.00"/>
+    </bean>
+
+    <!--默认按钮的大小-->
+    <bean id="dimension" class="java.awt.Dimension">
+        <constructor-arg name="width" value="30"/>
+        <constructor-arg name="height" value="30"/>
+    </bean>
 
     <!--开启注解aop的支持-->
     <aop:aspectj-autoproxy/>

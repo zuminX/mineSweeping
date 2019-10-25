@@ -4,14 +4,38 @@ import com.domain.MineSweepingModelData;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.List;
-
+/**
+ * 对数据库中扫雷模式数据进行操作的类
+ * 建立实体与表的映射关系
+ */
 @Mapper
 public interface MineSweepingModelDataMapper {
-    int insert(MineSweepingModelData record);
+    /**
+     * 向数据库插入一条扫雷模式数据
+     *
+     * @param mineSweepingModelData 扫雷模式数据
+     *
+     * @return 插入行数
+     */
+    int insert(MineSweepingModelData mineSweepingModelData);
 
-    int updateByModelId(@Param("updated")MineSweepingModelData updated,@Param("modelId")Integer modelId);
+    /**
+     * 通过id更新扫雷模式数据
+     *
+     * @param mineSweepingModelData 扫雷模式数据
+     * @param modelId               扫雷模式的id
+     *
+     * @return 更新行数
+     */
+    int updateByModelId(@Param("mineSweepingModelData") MineSweepingModelData mineSweepingModelData, @Param("modelId") Integer modelId);
 
-    MineSweepingModelData findOneByModelName(@Param("modelName")String modelName);
+    /**
+     * 根据名称查找扫雷模式数据
+     *
+     * @param modelName 模式名称
+     *
+     * @return 扫雷模式数据
+     */
+    MineSweepingModelData findOneByModelName(@Param("modelName") String modelName);
 
 }

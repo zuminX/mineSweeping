@@ -5,11 +5,11 @@
 package com.view;
 
 import com.domain.*;
-import com.jgoodies.forms.factories.*;
 import com.jgoodies.forms.factories.Borders;
 import com.controller.MineController;
-import com.jgoodies.forms.layout.*;
 import com.utils.BaseHolder;
+import com.utils.ComponentImage;
+import com.utils.Information;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +25,7 @@ import javax.swing.border.*;
  *
  * @author zumin
  */
+
 @Component("viewWindow")
 public class MainWindow extends JFrame {
     @Autowired
@@ -36,6 +37,9 @@ public class MainWindow extends JFrame {
     @Autowired
     private ViewComponent viewComponent;
 
+    /**
+     * 初始化游戏界面
+     */
     public MainWindow() {
         initComponents();
 
@@ -46,13 +50,13 @@ public class MainWindow extends JFrame {
         viewComponent.setExpressionLabel(expressionLabel);
         viewComponent.setTimeLabel(timeLabel);
         viewComponent.setButtonsPanel(buttonsPanel);
-        viewComponent.setEasyModelButton(easyModelButton);
+        viewComponent.setEasyModelRadioButtonMenuItem(easyModelButton);
         viewComponent.setRowTextField(rowTextField);
-        viewComponent.setOrdinaryModelButton(ordinaryModelButton);
+        viewComponent.setOrdinaryModelRadioButtonMenuItem(ordinaryModelButton);
         viewComponent.setColumnTextField(columnTextField);
-        viewComponent.setHardModelButton(hardModelButton);
+        viewComponent.setHardModelRadioButtonMenuItem(hardModelButton);
         viewComponent.setMineNumberTextField(mineNumberTextField);
-        viewComponent.setCustomizeModelButton(customizeModelButton);
+        viewComponent.setCustomizeModelRadioButtonMenuItem(customizeModelButton);
         viewComponent.setMineDensityTextField(mineDensityTextField);
         viewComponent.setGameNameField(gameNameField);
         viewComponent.setOpenRecordCheckBox(openRecordCheckBox);
@@ -64,43 +68,76 @@ public class MainWindow extends JFrame {
         viewComponent.setHardModelBestTimeLabel(hardModelBestTimeLabel);
         viewComponent.setCustomizeModelBestPlayerNameLabel(customizeModelBestPlayerNameLabel);
         viewComponent.setCustomizeModelBestTimeLabel(customizeModelBestTimeLabel);
+
+        label3.setText(Information.helpGame1);
+        label7.setText(Information.helpGame2);
+        label8.setText(Information.helpGame3);
+        label9.setText(Information.helpGame4);
+        label11.setText(Information.helpSet1);
+        label12.setText(Information.helpSet2);
+        label13.setText(Information.helpSet3);
+        label14.setText(Information.helpSet4);
+
+        expressionLabel.setIcon(ComponentImage.getGameImageIcon(ComponentImage.confusedBufferedImage, expressionLabel.getPreferredSize()));
+        //开启间隔1s的定时任务
+        new Timer(1000, new TimerListener()).start();
     }
 
-    private void showGameActionPerformed(ActionEvent e) {
+    /**
+     * 显示游戏的界面
+     */
+    private void showGameActionPerformed() {
         ((CardLayout) mainPanel.getLayout()).show(mainPanel, "card3");
     }
 
-
-    private void changeSettingActionPerformed(ActionEvent e) {
+    /**
+     * 显示设置的界面
+     */
+    private void changeSettingActionPerformed() {
         ((CardLayout) mainPanel.getLayout()).show(mainPanel, "card2");
+        //设置显示默认的模式和设置
         mineController.setDefaultModel();
         mineController.showNowOtherSetting();
     }
 
-    private void showHelpActionPerformed(ActionEvent e) {
+    /**
+     * 显示帮助的页面
+     */
+    private void showHelpActionPerformed() {
         ((CardLayout) mainPanel.getLayout()).show(mainPanel, "card4");
     }
 
+    /**
+     * 改变扫雷模式
+     * @param e 事件源
+     */
     private void changeModelActionPerformed(ActionEvent e) {
         mineController.changeModel(((JRadioButtonMenuItem) e.getSource()).getText());
     }
 
-    private void reloadLabelMouseClicked(MouseEvent e) {
+    /**
+     * 重新创建一局游戏
+     */
+    private void reloadLabelMouseClicked() {
+        //若还未加载数据，则无法进行重新创建新的游戏
         if (mineController.reloadGameData(gameNowData)) {
             return;
         }
+        //清理游戏数据
         cleanGameData();
     }
 
-    private void loadActionPerformed(ActionEvent e) {
-        // 加载数据
+    /**
+     * 加载扫雷游戏数据
+     */
+    private void loadActionPerformed() {
+        //加载数据
         //扫雷面板初始化
         final MineModel nowMineModel = mineController.getNowMineModel();
-
         buttonsPanel.removeAll();
         buttonsPanel.setLayout(new GridLayout(nowMineModel.getRow(), nowMineModel.getColumn()));
 
-        //创建扫雷按钮组并增加监听器添加到面板中
+        //创建扫雷按钮组并添加到面板中
         mineController.newMineViewButtons();
         mineController.addButtonsToPanel(gameNowData.getButtons());
 
@@ -111,54 +148,118 @@ public class MainWindow extends JFrame {
         //设置窗口合适大小
         mineController.setWindowSize(this, Toolkit.getDefaultToolkit().getScreenSize());
 
+        //设置按钮为默认的图片
+        mineController.setMineJButtonDefaultIcon();
+
         //将窗口定位到屏幕中心
         setLocationRelativeTo(null);
 
+        //清理游戏数据
         cleanGameData();
     }
 
+    /**
+     * 清理游戏数据
+     */
     private void cleanGameData() {
+        //移除按钮监听器
         mineController.removeButtonsListener();
 
+        //动态显示经过的时间
         mineController.showDynamicTime();
+
+        //初始化剩余的地雷数
         mineController.initRemainingMineNumberLabel();
+
+        //初始化游戏当前数据
         gameNowData.setInitStatus();
 
+        //添加按钮监听器
         mineController.addButtonsMouseListener();
+
+        //设置默认的表情
         mineController.setDefaultExpression();
+
+        //改变按钮的大小
+        mineController.changeButtonsIconSize();
+
     }
 
-    private void saveButtonActionPerformed(ActionEvent e) {
+    /**
+     * 保存设置的数据
+     */
+    private void saveButtonActionPerformed() {
         mineController.saveSettingData();
     }
 
-    private void showLeaderboardActionPerformed(ActionEvent e) {
+    /**
+     * 显示排行榜
+     */
+    private void showLeaderboardActionPerformed() {
         mineController.showLeaderboard();
         ((CardLayout) mainPanel.getLayout()).show(mainPanel, "card5");
     }
 
+    /**
+     * 按钮监听器
+     */
     @Component("mouseListener")
     public class ButtonMouseProcessor extends MouseAdapter {
 
+        /**
+         * 监听按钮点击事件
+         * @param e 事件源
+         */
         @Override
         public void mouseClicked(MouseEvent e) {
-            viewComponent.setNowClickButton((MineJButton) e.getSource());
-            //左键为打开区块
-            if(e.getButton() == MouseEvent.BUTTON1)
-            {
-                if (mineController.openSpace(gameNowData)) {
-                    mineController.removeButtonsListener();
+                //设置当前的点击的按钮
+                viewComponent.setNowClickButton((MineJButton) e.getSource());
+
+                //左键为打开区块
+                if(e.getButton() == MouseEvent.BUTTON1)
+                {
+                    mineController.openSpace(gameNowData);
                 }
-            }
-            //右键为设置旗帜
-            else if(e.getButton() == MouseEvent.BUTTON3)
-            {
-                mineController.setFlag();
+                //右键为设置旗帜
+                else if(e.getButton() == MouseEvent.BUTTON3)
+                {
+                    mineController.setFlag();
+                }
+        }
+    }
+
+    /**
+     * 定时任务监听器
+     */
+    @Component
+    private class TimerListener implements ActionListener {
+
+        /**
+         * 初始按钮大小
+         */
+        @Autowired
+        private Dimension dimension;
+
+        /**
+         * 监听按钮大小变化
+         *
+         * @param e 事件
+         */
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            final MineJButton[][] buttons = gameNowData.getButtons();
+            //若按钮组不为空且按钮的大小与初始化小不符
+            if (buttons != null && !buttons[0][0].getSize().equals(dimension)) {
+                //刷新按钮图片
+                mineController.changeButtonsIconSize();
+                dimension = buttons[0][0].getSize();
             }
         }
     }
 
-
+    /**
+     * 初始化组件
+     */
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         menuBar1 = new JMenuBar();
@@ -223,6 +324,7 @@ public class MainWindow extends JFrame {
 
         //======== this ========
         setTitle("MineSweeping");
+        setIconImage(new ImageIcon(getClass().getResource("/image/mine.png")).getImage());
         var contentPane = getContentPane();
         contentPane.setLayout(new BorderLayout());
 
@@ -240,40 +342,40 @@ public class MainWindow extends JFrame {
                 //---- menuItem1 ----
                 menuItem1.setText(" \u5f00\u59cb");
                 menuItem1.setHorizontalAlignment(SwingConstants.LEFT);
-                menuItem1.addActionListener(e -> showGameActionPerformed(e));
+                menuItem1.addActionListener(e -> showGameActionPerformed());
                 menu1.add(menuItem1);
                 menu1.addSeparator();
 
                 //---- menuItem2 ----
                 menuItem2.setText(" \u8bbe\u7f6e");
-                menuItem2.addActionListener(e -> changeSettingActionPerformed(e));
+                menuItem2.addActionListener(e -> changeSettingActionPerformed());
                 menu1.add(menuItem2);
                 menu1.addSeparator();
 
                 //---- menuItem4 ----
                 menuItem4.setText(" \u52a0\u8f7d");
-                menuItem4.addActionListener(e -> loadActionPerformed(e));
+                menuItem4.addActionListener(e -> loadActionPerformed());
                 menu1.add(menuItem4);
             }
             menuBar1.add(menu1);
 
             //======== menu2 ========
             {
-                menu2.setText(" \u5e2e\u52a9");
+                menu2.setText(" \u67e5\u770b");
                 menu2.setFont(new Font("Microsoft YaHei UI", Font.BOLD, 16));
                 menu2.setMaximumSize(new Dimension(55, 32767));
                 menu2.setMinimumSize(new Dimension(50, 27));
                 menu2.setPreferredSize(new Dimension(53, 27));
 
                 //---- menuItem3 ----
-                menuItem3.setText("  \u4fe1\u606f");
-                menuItem3.addActionListener(e -> showHelpActionPerformed(e));
+                menuItem3.setText(" \u5e2e\u52a9\u4fe1\u606f");
+                menuItem3.addActionListener(e -> showHelpActionPerformed());
                 menu2.add(menuItem3);
 
                 //---- menuItem5 ----
-                menuItem5.setText(" \u6392\u884c\u699c");
+                menuItem5.setText("  \u6392\u884c\u699c");
                 menuItem5.setHorizontalAlignment(SwingConstants.LEFT);
-                menuItem5.addActionListener(e -> showLeaderboardActionPerformed(e));
+                menuItem5.addActionListener(e -> showLeaderboardActionPerformed());
                 menu2.add(menuItem5);
             }
             menuBar1.add(menu2);
@@ -297,47 +399,56 @@ public class MainWindow extends JFrame {
                     //---- remainingMineNumberLabel ----
                     remainingMineNumberLabel.setBorder(LineBorder.createBlackLineBorder());
                     remainingMineNumberLabel.setBackground(Color.black);
-                    remainingMineNumberLabel.setText("000");
+                    remainingMineNumberLabel.setText("0");
                     remainingMineNumberLabel.setFont(new Font("\u9ed1\u4f53", Font.BOLD, 18));
                     remainingMineNumberLabel.setForeground(Color.red);
                     remainingMineNumberLabel.setOpaque(true);
                     remainingMineNumberLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                    remainingMineNumberLabel.setMaximumSize(new Dimension(35, 30));
+                    remainingMineNumberLabel.setMinimumSize(new Dimension(35, 30));
+                    remainingMineNumberLabel.setPreferredSize(new Dimension(35, 30));
+                    remainingMineNumberLabel.setToolTipText("\u5269\u4f59\u5730\u96f7\u6570");
 
                     //---- expressionLabel ----
                     expressionLabel.setText("text");
-                    expressionLabel.setMaximumSize(new Dimension(25, 25));
-                    expressionLabel.setMinimumSize(new Dimension(25, 25));
-                    expressionLabel.setPreferredSize(new Dimension(25, 25));
+                    expressionLabel.setMaximumSize(new Dimension(30, 30));
+                    expressionLabel.setMinimumSize(new Dimension(30, 30));
+                    expressionLabel.setPreferredSize(new Dimension(30, 30));
                     expressionLabel.setIcon(new ImageIcon(getClass().getResource("/image/confused.png")));
                     expressionLabel.setBorder(new MatteBorder(1, 1, 1, 1, Color.black));
+                    expressionLabel.setToolTipText("\u91cd\u65b0\u5f00\u5c40");
                     expressionLabel.addMouseListener(new MouseAdapter() {
                         @Override
                         public void mouseClicked(MouseEvent e) {
-                            reloadLabelMouseClicked(e);
+                            reloadLabelMouseClicked();
                         }
                     });
 
                     //---- timeLabel ----
-                    timeLabel.setText("000");
+                    timeLabel.setText("0");
                     timeLabel.setFont(new Font("\u9ed1\u4f53", Font.BOLD, 18));
                     timeLabel.setBorder(LineBorder.createBlackLineBorder());
                     timeLabel.setForeground(Color.red);
                     timeLabel.setOpaque(true);
                     timeLabel.setBackground(Color.black);
                     timeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                    timeLabel.setMaximumSize(new Dimension(35, 30));
+                    timeLabel.setMinimumSize(new Dimension(35, 30));
+                    timeLabel.setPreferredSize(new Dimension(35, 30));
+                    timeLabel.setToolTipText("\u5f53\u524d\u6240\u8fc7\u65f6\u95f4");
 
                     GroupLayout panel3Layout = new GroupLayout(panel3);
                     panel3.setLayout(panel3Layout);
                     panel3Layout.setHorizontalGroup(
                         panel3Layout.createParallelGroup()
                             .addGroup(panel3Layout.createSequentialGroup()
-                                .addContainerGap(36, Short.MAX_VALUE)
-                                .addComponent(remainingMineNumberLabel)
-                                .addGap(112, 112, 112)
+                                .addGap(40, 40, 40)
+                                .addComponent(remainingMineNumberLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(expressionLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 126, Short.MAX_VALUE)
-                                .addComponent(timeLabel)
-                                .addGap(33, 33, 33))
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(timeLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                .addGap(40, 40, 40))
                     );
                     panel3Layout.setVerticalGroup(
                         panel3Layout.createParallelGroup()
@@ -494,7 +605,7 @@ public class MainWindow extends JFrame {
 
                     //---- saveButton ----
                     saveButton.setText("\u4fdd\u5b58");
-                    saveButton.addActionListener(e -> saveButtonActionPerformed(e));
+                    saveButton.addActionListener(e -> saveButtonActionPerformed());
                     panel7.add(saveButton, new GridBagConstraints(0, 2, 2, 1, 0.0, 0.0,
                         GridBagConstraints.SOUTH, GridBagConstraints.HORIZONTAL,
                         new Insets(0, 0, 0, 0), 0, 0));
