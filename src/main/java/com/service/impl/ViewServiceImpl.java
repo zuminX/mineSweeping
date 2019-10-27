@@ -9,7 +9,6 @@ import com.utils.ComponentImage;
 import com.utils.GameOverDialog;
 import com.utils.Information;
 import com.view.MainWindow;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -29,19 +28,25 @@ import java.util.concurrent.CountDownLatch;
  * 返回数据给控制层
  */
 @Service("viewService")
+@SuppressWarnings("all")
 public class ViewServiceImpl implements ViewService {
-
     /**
      * 存放显示动态时间的类
      */
     private final ThreadLocal<DynamicTime> dynamicTimeThreadLocal = new ThreadLocal<>();
-
+    /**
+     * 视图组件
+     */
     @Autowired
     private ViewComponent viewComponent;
-
+    /**
+     * dao层对象
+     */
     @Autowired
     private MineDao mineDao;
-
+    /**
+     * 游戏当前数据
+     */
     @Autowired
     private GameNowData gameNowData;
 

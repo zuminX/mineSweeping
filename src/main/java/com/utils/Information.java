@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 /**
  * 存放扫雷游戏信息的类
  */
-@Component
+@Component("information")
 @PropertySource(value = "classpath:properties/information.properties", encoding = "utf-8")
 public class Information {
     public static String loadGameModelError;

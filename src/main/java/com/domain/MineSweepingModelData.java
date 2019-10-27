@@ -2,7 +2,6 @@ package com.domain;
 
 import lombok.Data;
 
-import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
@@ -15,6 +14,11 @@ import java.util.Set;
 @Data
 public class MineSweepingModelData implements Serializable {
     private static final long serialVersionUID = 1L;
+    /**
+     * 扫雷游戏数据
+     * 建立一对多关系
+     */
+    private final Set<MineSweepingGameData> mineSweepingGameDataSet = new HashSet<>();
     /**
      * 模式的id
      */
@@ -37,11 +41,12 @@ public class MineSweepingModelData implements Serializable {
     private String modelName;
 
     /**
-     * 扫雷游戏数据
-     * 建立一对多关系
+     * 判断两个扫雷模式是否相等
+     *
+     * @param o 判断对象
+     *
+     * @return 相等返回true，不等返回false
      */
-    private final Set<MineSweepingGameData> mineSweepingGameDataSet = new HashSet<>();
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -55,6 +60,11 @@ public class MineSweepingModelData implements Serializable {
                Objects.equals(modelName, that.modelName);
     }
 
+    /**
+     * 根据行、列、地雷数、模式名称计算出哈希值
+     *
+     * @return 哈希值
+     */
     @Override
     public int hashCode() {
         return Objects.hash(row, column, mineNumber, modelName);

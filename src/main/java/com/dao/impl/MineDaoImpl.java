@@ -17,26 +17,23 @@ import java.util.Properties;
  * 返回数据给业务层
  */
 @Repository("mineDao")
+@SuppressWarnings("all")
 public class MineDaoImpl implements MineDao {
-
     /**
      * 配置文件对象
      */
     @Autowired
     private Properties properties;
-
     /**
      * 地雷的基础设置配置文件的路径
      */
     @Value("/properties/mineBasicSetting.properties")
     private String mineBasicSettingPath;
-
     /**
      * 玩家数据设置配置文件的路径
      */
     @Value("/properties/playerDataSetting.properties")
     private String playerDataSettingPath;
-
     /**
      * 地雷模式设置配置文件的路径
      */

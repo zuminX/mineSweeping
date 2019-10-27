@@ -9,7 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Queue;
+import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -19,32 +22,42 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * 返回数据给控制层
  */
 @Service("mineService")
+@SuppressWarnings("all")
 public class MineServiceImpl implements MineService {
-
+    /**
+     * dao层对象
+     */
     @Autowired
     private MineDao mineDao;
-
+    /**
+     * 视图组件
+     */
     @Autowired
     private ViewComponent viewComponent;
-
+    /**
+     * 游戏当前数据
+     */
     @Autowired
     private GameNowData gameNowData;
-
+    /**
+     * 扫雷游戏的所有模式
+     */
     private MineAllModel mineAllModel = new MineAllModel();
-
     /**
      * 是否改变数据
      */
     private boolean changeData;
-
     /**
      * 地雷预加载数据
      */
     private Queue<MineData> minePreloadData = new ConcurrentLinkedQueue<>();
+    /**
+     * 产生随机数的对象
+     */
     private Random random;
 
     /**
-     * 定时任务，每隔5秒执行一次
+     * 初始化随机对象，预加载数据
      */
     public MineServiceImpl() {
         random = new Random();

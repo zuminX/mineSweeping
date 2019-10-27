@@ -23,14 +23,21 @@ import java.util.LongSummaryStatistics;
  * 返回数据给控制层
  */
 @Service("mineSweepingGameData")
+@SuppressWarnings("all")
 public class MineSweepingGameDataServiceImpl implements MineSweepingGameDataService {
-
+    /**
+     * mybatis控制扫雷游戏数据的持久层对象
+     */
     @Resource
     private MineSweepingGameDataMapper mineSweepingGameDataMapper;
-
+    /**
+     * mybatis控制扫雷游戏模式的持久层对象
+     */
     @Resource
     private MineSweepingModelDataMapper mineSweepingModelDataMapper;
-
+    /**
+     * dao层对象
+     */
     @Autowired
     private MineDao mineDao;
 

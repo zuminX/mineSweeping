@@ -10,7 +10,6 @@ import java.util.Properties;
 /**
  * 所有地雷模式对象
  */
-@SuppressWarnings("all")
 public class MineAllModel {
     /**
      * 配置文件对象
@@ -75,6 +74,7 @@ public class MineAllModel {
 
     /**
      * 无设置则返回简单模式
+     *
      * @return 当前扫雷模式
      */
     public MineModel getNowMineModel() {
@@ -87,8 +87,9 @@ public class MineAllModel {
 
     /**
      * 根据名字找到配置文件对应的数据创建指定名字的模式
+     *
      * @param modelNamePro 该模式在配置文件的名字
-     * @param modelName 该模式的名字
+     * @param modelName    该模式的名字
      *
      * @return 扫雷模式
      */

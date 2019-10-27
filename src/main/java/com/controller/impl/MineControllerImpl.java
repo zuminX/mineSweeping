@@ -19,11 +19,21 @@ import java.awt.*;
  * 接受业务层返回的数据并返回给视图层
  */
 @Controller("mineController")
+@SuppressWarnings("all")
 public class MineControllerImpl implements MineController {
+    /**
+     * 处理扫雷游戏数据的业务层对象
+     */
     @Autowired
     private MineService mineService;
+    /**
+     * 处理扫雷游戏显示的业务层对象
+     */
     @Autowired
     private ViewService viewService;
+    /**
+     * 控制扫雷数据库的对象
+     */
     @Autowired
     private MineSweepingGameDataService mineSweepingGameDataService;
 

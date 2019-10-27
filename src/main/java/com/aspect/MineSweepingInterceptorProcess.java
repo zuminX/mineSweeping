@@ -17,15 +17,20 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Aspect
+@SuppressWarnings("all")
 public class MineSweepingInterceptorProcess {
     /**
      * 日志对象
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(MineSweepingInterceptorProcess.class);
-
+    /**
+     * 处理扫雷游戏数据的业务层对象
+     */
     @Autowired
     private ViewService viewService;
-
+    /**
+     * dao层对象
+     */
     @Autowired
     private MineDao mineDao;
 
