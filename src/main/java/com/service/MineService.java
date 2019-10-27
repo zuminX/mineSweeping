@@ -44,4 +44,9 @@ public interface MineService {
      * @return false 没有发生异常；null 发生异常
      */
     Boolean saveSettingData();
+
+    /**
+     * 预加载数据
+     */
+    void preLoadData();
 }

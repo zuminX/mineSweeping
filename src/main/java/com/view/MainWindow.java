@@ -88,6 +88,9 @@ public class MainWindow extends JFrame {
      */
     private void showGameActionPerformed() {
         ((CardLayout) mainPanel.getLayout()).show(mainPanel, "card3");
+
+        //预加载数据
+        mineController.preLoadData();
     }
 
     /**
@@ -162,6 +165,9 @@ public class MainWindow extends JFrame {
      * 清理游戏数据
      */
     private void cleanGameData() {
+        //预加载数据
+        mineController.preLoadData();
+
         //移除按钮监听器
         mineController.removeButtonsListener();
 
@@ -183,6 +189,8 @@ public class MainWindow extends JFrame {
         //改变按钮的大小
         mineController.changeButtonsIconSize();
 
+        //预加载数据
+        mineController.preLoadData();
     }
 
     /**

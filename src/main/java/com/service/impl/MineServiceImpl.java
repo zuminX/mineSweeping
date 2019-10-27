@@ -33,6 +33,11 @@ public class MineServiceImpl implements MineService {
     private MineAllModel mineAllModel = new MineAllModel();
 
     /**
+     * 是否改变数据
+     */
+    private boolean changeData;
+
+    /**
      * 地雷预加载数据
      */
     private Queue<MineData> minePreloadData = new ConcurrentLinkedQueue<>();
@@ -42,8 +47,8 @@ public class MineServiceImpl implements MineService {
      * 定时任务，每隔5秒执行一次
      */
     public MineServiceImpl() {
-        new Timer().schedule(new Preload(), 0, 5000);
         random = new Random();
+        preLoadData();
     }
 
     /**
@@ -154,30 +159,33 @@ public class MineServiceImpl implements MineService {
      */
     @Override
     public Boolean saveSettingData() {
-        MineModel customizeModelByData;
-        //创建自定义扫雷模式
-        try {
-            customizeModelByData = mineDao.findCustomizeModelByData(viewComponent.getRowTextField().getText(),
-                    viewComponent.getColumnTextField().getText(), viewComponent.getMineNumberTextField().getText());
-        } catch (IOException e) {
-            //有异常则抛出加载游戏基础设置异常
-            throw new RuntimeException(Information.loadGameBasicSettingError);
-        }
+        //若当前模式为自定义模式
+        if (getNowMineModel().getName().equals("自定义")) {
+            MineModel customizeModelByData;
+            //创建自定义扫雷模式
+            try {
+                customizeModelByData = mineDao.findCustomizeModelByData(viewComponent.getRowTextField().getText(),
+                        viewComponent.getColumnTextField().getText(), viewComponent.getMineNumberTextField().getText());
+            } catch (IOException e) {
+                //有异常则抛出加载游戏基础设置异常
+                throw new RuntimeException(Information.loadGameBasicSettingError);
+            }
 
-        //自定义模式为空则抛出改变自定义模式数据异常
-        if (customizeModelByData == null) {
-            throw new RuntimeException(Information.changeCustomizeDataError);
-        }
+            //自定义模式为空则抛出改变自定义模式数据异常
+            if (customizeModelByData == null) {
+                throw new RuntimeException(Information.changeCustomizeDataError);
+            }
 
-        //设置自定义模式
-        mineAllModel.setCustomizeModel(customizeModelByData);
+            //设置自定义模式
+            mineAllModel.setCustomizeModel(customizeModelByData);
 
-        //向配置文件中更新自定义模式数据
-        try {
-            mineDao.updateCustomizeModelInProperties(customizeModelByData);
-        } catch (IOException e) {
-            //有异常则抛出加载游戏基础设置异常
-            throw new RuntimeException(Information.loadGameBasicSettingError);
+            //向配置文件中更新自定义模式数据
+            try {
+                mineDao.updateCustomizeModelInProperties(customizeModelByData);
+            } catch (IOException e) {
+                //有异常则抛出加载游戏基础设置异常
+                throw new RuntimeException(Information.loadGameBasicSettingError);
+            }
         }
 
         //获取标签上的名字
@@ -202,6 +210,10 @@ public class MineServiceImpl implements MineService {
             //有异常则抛出加载玩家数据基础设置异常
             throw new RuntimeException(Information.loadPlayerDataSettingError);
         }
+
+        //改变了数据
+        changeData = true;
+
         return false;
     }
 
@@ -283,6 +295,14 @@ public class MineServiceImpl implements MineService {
     }
 
     /**
+     * 进行预加载数据
+     */
+    @Override
+    public void preLoadData() {
+        new Thread(new Preload()).start();
+    }
+
+    /**
      * 创建新的地雷数据
      *
      * @param ignorePoint 忽略的点
@@ -300,12 +320,7 @@ public class MineServiceImpl implements MineService {
     /**
      * 进行定时预加载数据的类
      */
-    private class Preload extends TimerTask {
-        /**
-         * 旧扫雷模式
-         */
-        private MineModel oldMineModel = getNowMineModel();
-
+    private class Preload implements Runnable {
         /**
          * 预加载数据
          */
@@ -313,14 +328,13 @@ public class MineServiceImpl implements MineService {
         public void run() {
             try {
                 final MineModel nowMineModel = getNowMineModel();
-                //若当前模式和旧模式不匹配，则清空预加载数据
-                if (!nowMineModel.equals(oldMineModel)) {
+                //若改变数据，则清空预加载数据
+                if (changeData) {
                     minePreloadData.clear();
-                    //更新为当前模式
-                    oldMineModel = nowMineModel;
+                    changeData = false;
                 }
                 //设置预加载的大小为：最大(地雷密度*10)^3，最小8
-                final int size = Math.max((int) (Math.pow(nowMineModel.getMineDensity() * 10, 3)), 8);
+                final int size = Math.max((int) (Math.pow(nowMineModel.getMineDensity() * 10, 4)), 16);
                 //预加载容器小于设定大小时，向其中创建地雷数据
                 while (minePreloadData.size() < size) {
                     minePreloadData.offer(newMineData(null));

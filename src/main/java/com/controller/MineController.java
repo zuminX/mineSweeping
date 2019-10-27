@@ -48,6 +48,11 @@ public interface MineController {
     void newMineViewButtons();
 
     /**
+     * 进行预加载数据
+     */
+    void preLoadData();
+
+    /**
      * 打开空白方块
      *
      * @param gameNowData 扫雷当前数据对象

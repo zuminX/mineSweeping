@@ -84,6 +84,15 @@ public class MineControllerImpl implements MineController {
     }
 
     /**
+     * 进行预加载数据
+     */
+    @Override
+    public void preLoadData() {
+        //预加载数据
+        mineService.preLoadData();
+    }
+
+    /**
      * 打开空白方块
      *
      * @param gameNowData 扫雷当前数据对象
@@ -146,6 +155,7 @@ public class MineControllerImpl implements MineController {
         }
         //清理视图数据
         viewService.cleanViewData();
+        //预加载数据
         return false;
     }
 
@@ -205,7 +215,6 @@ public class MineControllerImpl implements MineController {
     @Override
     public void saveSettingData() {
         if (mineService.saveSettingData() != null) {
-            viewService.setModelDataText(getNowMineModel());
             viewService.showInformation(Information.saveDataSucceed);
         }
     }

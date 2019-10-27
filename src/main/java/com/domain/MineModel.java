@@ -3,6 +3,7 @@ package com.domain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.context.annotation.Scope;
 
 /**
  * 封装扫雷模式的数据
@@ -36,4 +37,5 @@ public class MineModel {
     public double getMineDensity() {
         return (double) mineNumber / (row * column);
     }
+
 }
