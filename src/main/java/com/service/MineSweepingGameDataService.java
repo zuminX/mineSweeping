@@ -3,7 +3,7 @@ package com.service;
 import com.domain.GameNowData;
 import com.domain.GameOverDialogData;
 import com.domain.MineModel;
-import com.domain.MineSweepingGameData;
+import com.pojo.MineSweepingGameData;
 
 import java.util.List;
 
@@ -18,7 +18,6 @@ public interface MineSweepingGameDataService {
      * 根据扫雷游戏数据创建对话框数据
      *
      * @param mineSweepingGameData 扫雷游戏数据
-     *
      * @return 游戏结束对话框数据
      */
     GameOverDialogData findGameOverData(MineSweepingGameData mineSweepingGameData);
@@ -35,7 +34,6 @@ public interface MineSweepingGameDataService {
      *
      * @param gameNowData  游戏当前数据
      * @param nowMineModel 当前扫雷模式
-     *
      * @return 扫雷游戏数据
      */
     MineSweepingGameData insert(GameNowData gameNowData, MineModel nowMineModel);
@@ -45,7 +43,6 @@ public interface MineSweepingGameDataService {
      *
      * @param playerName 玩家名称
      * @param modelName  扫雷模式名称
-     *
      * @return 扫雷游戏数据集合
      */
     List<MineSweepingGameData> findByPlayerNameAndModelName(String playerName, String modelName);

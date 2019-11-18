@@ -1,6 +1,7 @@
 package com.domain;
 
 import com.utils.BaseHolder;
+import com.utils.Point;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

@@ -1,6 +1,6 @@
 package com.mapper;
 
-import com.domain.MineSweepingModelData;
+import com.pojo.MineSweepingModelData;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -14,7 +14,6 @@ public interface MineSweepingModelDataMapper {
      * 向数据库插入一条扫雷模式数据
      *
      * @param mineSweepingModelData 扫雷模式数据
-     *
      * @return 插入行数
      */
     int insert(MineSweepingModelData mineSweepingModelData);
@@ -24,7 +23,6 @@ public interface MineSweepingModelDataMapper {
      *
      * @param mineSweepingModelData 扫雷模式数据
      * @param modelId               扫雷模式的id
-     *
      * @return 更新行数
      */
     int updateByModelId(@Param("mineSweepingModelData") MineSweepingModelData mineSweepingModelData, @Param("modelId") Integer modelId);
@@ -33,7 +31,6 @@ public interface MineSweepingModelDataMapper {
      * 根据名称查找扫雷模式数据
      *
      * @param modelName 模式名称
-     *
      * @return 扫雷模式数据
      */
     MineSweepingModelData findOneByModelName(@Param("modelName") String modelName);

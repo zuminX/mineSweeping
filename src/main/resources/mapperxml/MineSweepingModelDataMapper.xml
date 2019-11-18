@@ -8,7 +8,7 @@
             mine_number,
             model_name
     </sql>
-    <resultMap id="BaseResultMap" type="com.domain.MineSweepingModelData">
+    <resultMap id="BaseResultMap" type="com.pojo.MineSweepingModelData">
         <!--@mbg.generated-->
         <!--@Table mine_sweeping_model_data-->
         <id column="model_id" jdbcType="INTEGER" property="modelId"/>
@@ -17,7 +17,7 @@
         <result column="mine_number" jdbcType="INTEGER" property="mineNumber"/>
         <result column="model_name" jdbcType="VARCHAR" property="modelName"/>
 
-        <collection property="mineSweepingGameDataSet" ofType="com.domain.MineSweepingGameData">
+        <collection property="mineSweepingGameDataSet" ofType="com.pojo.MineSweepingGameData">
             <result column="data_id" jdbcType="INTEGER" property="dataId"/>
             <result column="player_name" jdbcType="VARCHAR" property="playerName"/>
             <result column="time" jdbcType="BIGINT" property="time"/>
@@ -28,7 +28,7 @@
     <insert id="insert"
             keyColumn="model_id"
             keyProperty="modelId"
-            parameterType="com.domain.MineSweepingModelData"
+            parameterType="com.pojo.MineSweepingModelData"
             useGeneratedKeys="true">
         <!--@mbg.generated-->
         insert into mine_sweeping_model_data (`row`, `column`, mine_number,

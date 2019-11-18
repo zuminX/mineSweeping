@@ -1,13 +1,11 @@
 package com.service.impl;
 
-import com.dao.MineDao;
-import com.domain.Point;
+import com.dao.GamePropertiesDao;
 import com.domain.*;
-import com.service.ViewService;
-import com.utils.BaseHolder;
-import com.utils.ComponentImage;
-import com.utils.GameOverDialog;
-import com.utils.Information;
+import com.pojo.MineSweepingGameData;
+import com.service.GameViewService;
+import com.utils.Point;
+import com.utils.*;
 import com.view.MainWindow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,28 +25,34 @@ import java.util.concurrent.CountDownLatch;
  * 接收控制层的数据
  * 返回数据给控制层
  */
-@Service("viewService")
-@SuppressWarnings("all")
-public class ViewServiceImpl implements ViewService {
-    /**
-     * 存放显示动态时间的类
-     */
-    private final ThreadLocal<DynamicTime> dynamicTimeThreadLocal = new ThreadLocal<>();
+@Service("gameViewService")
+public class GameViewServiceImpl implements GameViewService {
     /**
      * 视图组件
      */
-    @Autowired
-    private ViewComponent viewComponent;
+    private final ViewComponent viewComponent;
     /**
      * dao层对象
      */
-    @Autowired
-    private MineDao mineDao;
+    private final GamePropertiesDao mineDao;
     /**
      * 游戏当前数据
      */
+    private final GameNowData gameNowData;
+    /**
+     * 存放显示动态时间的类
+     */
+    private DynamicTime dynamicTime;
+
+    /**
+     * 注入成员变量
+     */
     @Autowired
-    private GameNowData gameNowData;
+    public GameViewServiceImpl(ViewComponent viewComponent, GamePropertiesDao mineDao, GameNowData gameNowData) {
+        this.viewComponent = viewComponent;
+        this.mineDao = mineDao;
+        this.gameNowData = gameNowData;
+    }
 
     /**
      * 根据扫雷模式设置文本框的编辑性
@@ -252,13 +256,13 @@ public class ViewServiceImpl implements ViewService {
      */
     @Override
     public void showDynamicTime() {
-        //若该线程锁中为空，则创建一个线程并添加到其中
-        if (dynamicTimeThreadLocal.get() == null) {
-            dynamicTimeThreadLocal.set(new DynamicTime(viewComponent.getTimeLabel()));
-            new Thread(dynamicTimeThreadLocal.get()).start();
+        //若该对象为空，则创建其并运行
+        if (dynamicTime == null) {
+            dynamicTime = new DynamicTime(viewComponent.getTimeLabel());
+            new Thread(dynamicTime).start();
         }
         //获得该对象并设置其为初始化状态
-        dynamicTimeThreadLocal.get().setInitStatus();
+        dynamicTime.setInitStatus();
     }
 
     /**
@@ -325,11 +329,7 @@ public class ViewServiceImpl implements ViewService {
     @Override
     public void addButtonsToPanel(MineJButton[][] buttons) {
         JPanel buttonsPanel = viewComponent.getButtonsPanel();
-        for (JButton[] button : buttons) {
-            for (JButton b : button) {
-                buttonsPanel.add(b);
-            }
-        }
+        Arrays.stream(buttons).flatMap(Arrays::stream).forEach(button -> buttonsPanel.add(button));
     }
 
     /**
@@ -338,11 +338,7 @@ public class ViewServiceImpl implements ViewService {
     @Override
     public void addButtonsMouseListener() {
         MouseListener listener = BaseHolder.getBean("mouseListener");
-        for (JButton[] button : gameNowData.getButtons()) {
-            for (JButton b : button) {
-                b.addMouseListener(listener);
-            }
-        }
+        Arrays.stream(gameNowData.getButtons()).flatMap(Arrays::stream).forEach(button -> button.addMouseListener(listener));
     }
 
     /**
@@ -351,11 +347,8 @@ public class ViewServiceImpl implements ViewService {
     @Override
     public void removeButtonsListener() {
         MouseListener listener = BaseHolder.getBean("mouseListener");
-        for (JButton[] button : gameNowData.getButtons()) {
-            for (JButton b : button) {
-                b.removeMouseListener(listener);
-            }
-        }
+        Arrays.stream(gameNowData.getButtons()).flatMap(Arrays::stream).forEach(button -> button.removeMouseListener(listener));
+
     }
 
     /**

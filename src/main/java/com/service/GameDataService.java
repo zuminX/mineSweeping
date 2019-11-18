@@ -1,7 +1,7 @@
 package com.service;
 
 import com.domain.MineModel;
-import com.domain.Point;
+import com.utils.Point;
 
 /**
  * 扫雷业务层的接口
@@ -9,12 +9,11 @@ import com.domain.Point;
  * 调用dao层获得扫雷数据
  * 返回数据给控制层
  */
-public interface MineService {
+public interface GameDataService {
     /**
      * 根据名称改变当前扫雷模式
      *
      * @param modelName 模式名称
-     *
      * @return false 没有发生异常；null 发生异常
      */
     Boolean changeModel(String modelName);

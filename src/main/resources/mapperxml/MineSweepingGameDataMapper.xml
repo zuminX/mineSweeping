@@ -8,14 +8,14 @@
             is_win,
             model_id
     </sql>
-    <resultMap id="BaseResultMap" type="com.domain.MineSweepingGameData">
+    <resultMap id="BaseResultMap" type="com.pojo.MineSweepingGameData">
         <!--@mbg.generated-->
         <!--@Table mine_sweeping_game_data-->
         <id column="data_id" jdbcType="INTEGER" property="dataId"/>
         <result column="player_name" jdbcType="VARCHAR" property="playerName"/>
         <result column="time" jdbcType="BIGINT" property="time"/>
         <result column="is_win" jdbcType="TINYINT" property="isWin"/>
-        <association column="model_id" property="mineSweepingModelData" javaType="com.domain.MineSweepingModelData">
+        <association column="model_id" property="mineSweepingModelData" javaType="com.pojo.MineSweepingModelData">
             <id column="model_id" jdbcType="INTEGER" property="modelId"/>
             <result column="row" jdbcType="INTEGER" property="row"/>
             <result column="column" jdbcType="INTEGER" property="column"/>
@@ -27,7 +27,7 @@
     <insert id="insert"
             keyColumn="data_id"
             keyProperty="dataId"
-            parameterType="com.domain.MineSweepingGameData"
+            parameterType="com.pojo.MineSweepingGameData"
             useGeneratedKeys="true">
         <!--@mbg.generated-->
         insert into mine_sweeping_game_data (player_name, `time`, is_win, model_id
@@ -52,7 +52,7 @@
         model.model_name=#{modelName,jdbcType=VARCHAR}
     </select>
 
-    <select id="findByModelNameOrderByTime" resultType="com.domain.MineSweepingGameData">
+    <select id="findByModelNameOrderByTime" resultType="com.pojo.MineSweepingGameData">
         select
         *
         from mine_sweeping_game_data game inner join mine_sweeping_model_data model

@@ -1,10 +1,11 @@
 package com.controller.impl;
 
-import com.controller.MineController;
+import com.controller.GameController;
 import com.domain.*;
-import com.service.MineService;
+import com.pojo.MineSweepingGameData;
+import com.service.GameDataService;
+import com.service.GameViewService;
 import com.service.MineSweepingGameDataService;
-import com.service.ViewService;
 import com.utils.BaseHolder;
 import com.utils.Information;
 import com.view.MainWindow;
@@ -18,24 +19,31 @@ import java.awt.*;
  * 接收视图层的数据,数据传递给业务层
  * 接受业务层返回的数据并返回给视图层
  */
-@Controller("mineController")
-@SuppressWarnings("all")
-public class MineControllerImpl implements MineController {
+@Controller("gameController")
+public class GameControllerImpl implements GameController {
     /**
      * 处理扫雷游戏数据的业务层对象
      */
-    @Autowired
-    private MineService mineService;
+    private final GameDataService gameDataService;
     /**
      * 处理扫雷游戏显示的业务层对象
      */
-    @Autowired
-    private ViewService viewService;
+    private final GameViewService gameViewService;
     /**
      * 控制扫雷数据库的对象
      */
+    private final MineSweepingGameDataService mineSweepingGameDataService;
+
+    /**
+     * 注入成员变量
+     */
     @Autowired
-    private MineSweepingGameDataService mineSweepingGameDataService;
+    public GameControllerImpl(GameDataService gameDataService, GameViewService gameViewService,
+                              MineSweepingGameDataService mineSweepingGameDataService) {
+        this.gameDataService = gameDataService;
+        this.gameViewService = gameViewService;
+        this.mineSweepingGameDataService = mineSweepingGameDataService;
+    }
 
     /**
      * 改变当前扫雷模式
@@ -45,14 +53,14 @@ public class MineControllerImpl implements MineController {
     @Override
     public void changeModel(String modelName) {
         //发生异常直接返回
-        if (mineService.changeModel(modelName) == null) {
+        if (gameDataService.changeModel(modelName) == null) {
             return;
         }
-        final MineModel nowMineModel = mineService.getNowMineModel();
-        //设置显示为当前模式和数据
+        final MineModel nowMineModel = gameDataService.getNowMineModel();
 
-        viewService.setModelEnabled(nowMineModel);
-        viewService.setModelDataText(nowMineModel);
+        //设置显示为当前模式和数据
+        gameViewService.setModelEnabled(nowMineModel);
+        gameViewService.setModelDataText(nowMineModel);
     }
 
     /**
@@ -60,8 +68,8 @@ public class MineControllerImpl implements MineController {
      */
     @Override
     public void setDefaultModel() {
-        viewService.setDefaultModel(mineService.getNowMineModel());
-        changeModel(mineService.getNowMineModel().getName());
+        gameViewService.setDefaultModel(gameDataService.getNowMineModel());
+        changeModel(gameDataService.getNowMineModel().getName());
     }
 
     /**
@@ -71,7 +79,7 @@ public class MineControllerImpl implements MineController {
      */
     @Override
     public MineModel getNowMineModel() {
-        return mineService.getNowMineModel();
+        return gameDataService.getNowMineModel();
     }
 
     /**
@@ -82,7 +90,7 @@ public class MineControllerImpl implements MineController {
      */
     @Override
     public void setWindowSize(MainWindow mainWindow, Dimension screenSize) {
-        viewService.setWindowSize(mineService.getNowMineModel(), mainWindow, screenSize);
+        gameViewService.setWindowSize(gameDataService.getNowMineModel(), mainWindow, screenSize);
     }
 
     /**
@@ -90,7 +98,7 @@ public class MineControllerImpl implements MineController {
      */
     @Override
     public void newMineViewButtons() {
-        mineService.newMineViewButtons();
+        gameDataService.newMineViewButtons();
     }
 
     /**
@@ -98,8 +106,7 @@ public class MineControllerImpl implements MineController {
      */
     @Override
     public void preLoadData() {
-        //预加载数据
-        mineService.preLoadData();
+        gameDataService.preLoadData();
     }
 
     /**
@@ -112,32 +119,32 @@ public class MineControllerImpl implements MineController {
         MineJButton button = BaseHolder.getBean("viewComponent", ViewComponent.class).getNowClickButton();
         //选择合适地图，规避第一步就是雷
         if (gameNowData.getOpenSpace() == 0) {
-            mineService.fillMineData(button.getPoint());
+            gameDataService.fillMineData(button.getPoint());
             //设置开始时间
             gameNowData.setStartTime(System.currentTimeMillis());
         }
         //游戏胜利或失败
-        if (viewService.openSpace(button) || gameNowData.isWin()) {
+        if (gameViewService.openSpace(button) || gameNowData.isWin()) {
             //设置结束时间
             gameNowData.setEndTime(System.currentTimeMillis());
 
             //改变当前表情
-            viewService.changeExpressionStatus();
+            gameViewService.changeExpressionStatus();
 
             //加载剩余按钮图片
-            viewService.loadRemainderButtonsIcon();
+            gameViewService.loadRemainderButtonsIcon();
 
             //移除按钮监听器
-            viewService.removeButtonsListener();
+            gameViewService.removeButtonsListener();
 
             //向数据库插入本局游戏数据
-            MineSweepingGameData gameData = mineSweepingGameDataService.insert(gameNowData, mineService.getNowMineModel());
+            MineSweepingGameData gameData = mineSweepingGameDataService.insert(gameNowData, gameDataService.getNowMineModel());
 
             //获得结束游戏的显示数据
             GameOverDialogData data = mineSweepingGameDataService.findGameOverData(gameData);
 
             //以弹出框的形式显示游戏结束的数据
-            viewService.showGameOverDialog(data);
+            gameViewService.showGameOverDialog(data);
 
         }
     }
@@ -147,14 +154,13 @@ public class MineControllerImpl implements MineController {
      */
     @Override
     public void setFlag() {
-        viewService.setFlag();
+        gameViewService.setFlag();
     }
 
     /**
      * 重新加载当前游戏的数据
      *
      * @param gameNowData 扫雷当前数据对象
-     *
      * @return 重新加载失败->true 重新加载成功->false
      */
     @Override
@@ -164,7 +170,7 @@ public class MineControllerImpl implements MineController {
             return true;
         }
         //清理视图数据
-        viewService.cleanViewData();
+        gameViewService.cleanViewData();
         //预加载数据
         return false;
     }
@@ -174,7 +180,7 @@ public class MineControllerImpl implements MineController {
      */
     @Override
     public void showDynamicTime() {
-        viewService.showDynamicTime();
+        gameViewService.showDynamicTime();
     }
 
     /**
@@ -182,7 +188,7 @@ public class MineControllerImpl implements MineController {
      */
     @Override
     public void initRemainingMineNumberLabel() {
-        viewService.initRemainingMineNumberLabel(mineService.getNowMineModel());
+        gameViewService.initRemainingMineNumberLabel(gameDataService.getNowMineModel());
     }
 
     /**
@@ -190,7 +196,7 @@ public class MineControllerImpl implements MineController {
      */
     @Override
     public void showNowOtherSetting() {
-        viewService.showNowOtherSetting();
+        gameViewService.showNowOtherSetting();
     }
 
     /**
@@ -200,7 +206,7 @@ public class MineControllerImpl implements MineController {
      */
     @Override
     public void addButtonsToPanel(MineJButton[][] buttons) {
-        viewService.addButtonsToPanel(buttons);
+        gameViewService.addButtonsToPanel(buttons);
     }
 
     /**
@@ -208,7 +214,7 @@ public class MineControllerImpl implements MineController {
      */
     @Override
     public void addButtonsMouseListener() {
-        viewService.addButtonsMouseListener();
+        gameViewService.addButtonsMouseListener();
     }
 
     /**
@@ -216,7 +222,7 @@ public class MineControllerImpl implements MineController {
      */
     @Override
     public void removeButtonsListener() {
-        viewService.removeButtonsListener();
+        gameViewService.removeButtonsListener();
     }
 
     /**
@@ -224,8 +230,8 @@ public class MineControllerImpl implements MineController {
      */
     @Override
     public void saveSettingData() {
-        if (mineService.saveSettingData() != null) {
-            viewService.showInformation(Information.saveDataSucceed);
+        if (gameDataService.saveSettingData() != null) {
+            gameViewService.showInformation(Information.saveDataSucceed);
         }
     }
 
@@ -234,7 +240,7 @@ public class MineControllerImpl implements MineController {
      */
     @Override
     public void setDefaultExpression() {
-        viewService.setDefaultExpression();
+        gameViewService.setDefaultExpression();
     }
 
     /**
@@ -243,7 +249,7 @@ public class MineControllerImpl implements MineController {
     @Override
     public void showLeaderboard() {
         final MineSweepingGameData[] allModelBestGameData = mineSweepingGameDataService.findAllModelBestGameData();
-        viewService.setAllModelBestGameData(allModelBestGameData);
+        gameViewService.setAllModelBestGameData(allModelBestGameData);
     }
 
     /**
@@ -251,7 +257,7 @@ public class MineControllerImpl implements MineController {
      */
     @Override
     public void setMineJButtonDefaultIcon() {
-        viewService.setMineJButtonDefaultIcon();
+        gameViewService.setMineJButtonDefaultIcon();
     }
 
     /**
@@ -259,7 +265,7 @@ public class MineControllerImpl implements MineController {
      */
     @Override
     public void changeButtonsIconSize() {
-        viewService.changeButtonsIconSize();
+        gameViewService.changeButtonsIconSize();
     }
 
 }

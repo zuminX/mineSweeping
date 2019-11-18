@@ -1,6 +1,6 @@
 package com.dao.impl;
 
-import com.dao.MineDao;
+import com.dao.GamePropertiesDao;
 import com.domain.MineModel;
 import com.utils.Information;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +16,12 @@ import java.util.Properties;
  * 读取扫雷文件数据
  * 返回数据给业务层
  */
-@Repository("mineDao")
-@SuppressWarnings("all")
-public class MineDaoImpl implements MineDao {
+@Repository("gamePropertiesDao")
+public class GamePropertiesDaoImpl implements GamePropertiesDao {
     /**
      * 配置文件对象
      */
-    @Autowired
-    private Properties properties;
+    private final Properties properties;
     /**
      * 地雷的基础设置配置文件的路径
      */
@@ -41,14 +39,20 @@ public class MineDaoImpl implements MineDao {
     private String mineModelSettingPath;
 
     /**
+     * 注入成员变量
+     */
+    @Autowired
+    public GamePropertiesDaoImpl(Properties properties) {
+        this.properties = properties;
+    }
+
+    /**
      * 根据参数创建一个地雷模式对象
      *
      * @param rowStr        行数字符串
      * @param columnStr     列数字符串
      * @param mineNumberStr 地雷数字符串
-     *
      * @return 地雷模式对象
-     *
      * @throws IOException I/O流异常
      */
     @Override
@@ -82,7 +86,6 @@ public class MineDaoImpl implements MineDao {
      * 对配置文件进行更新自定义模式的数据
      *
      * @param mineModel 地雷模式对象
-     *
      * @throws IOException I/O流异常
      */
     @Override
@@ -100,7 +103,6 @@ public class MineDaoImpl implements MineDao {
      * 改变游戏名
      *
      * @param name 游戏名
-     *
      * @throws IOException I/O流异常
      */
     @Override
@@ -116,7 +118,6 @@ public class MineDaoImpl implements MineDao {
      * 获取当前游戏名
      *
      * @return 当前游戏名
-     *
      * @throws IOException I/O流异常
      */
     @Override
@@ -130,7 +131,6 @@ public class MineDaoImpl implements MineDao {
      * 获取当前是否开启记录数据
      *
      * @return 开启记录->true 未开启记录->false
-     *
      * @throws IOException I/O流异常
      */
     @Override
@@ -144,7 +144,6 @@ public class MineDaoImpl implements MineDao {
      * 改变是否记录数据的状态
      *
      * @param isSelected 是否选择了开启记录
-     *
      * @throws IOException I/O流异常
      */
     @Override
@@ -160,7 +159,6 @@ public class MineDaoImpl implements MineDao {
      * 保存配置文件
      *
      * @param path 配置文件路径
-     *
      * @throws IOException I/O流异常
      */
     private void getStore(String path) throws IOException {
@@ -171,7 +169,6 @@ public class MineDaoImpl implements MineDao {
      * 加载配置文件
      *
      * @param path 配置文件路径
-     *
      * @throws IOException I/O流异常
      */
     private void getLoad(String path) throws IOException {

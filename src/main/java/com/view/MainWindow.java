@@ -1,6 +1,6 @@
 package com.view;
 
-import com.controller.MineController;
+import com.controller.GameController;
 import com.domain.GameNowData;
 import com.domain.MineJButton;
 import com.domain.MineModel;
@@ -29,23 +29,19 @@ import java.awt.event.MouseEvent;
  */
 
 @Component("viewWindow")
-@SuppressWarnings("all")
 public class MainWindow extends JFrame {
     /**
      * 控制层对象
      */
-    @Autowired
-    private MineController mineController;
+    private final GameController gameController;
     /**
      * 游戏当前数据
      */
-    @Autowired
-    private GameNowData gameNowData;
+    private final GameNowData gameNowData;
     /**
      * 视图组件
      */
-    @Autowired
-    private ViewComponent viewComponent;
+    private final ViewComponent viewComponent;
     /**
      * 主面板
      */
@@ -58,10 +54,15 @@ public class MainWindow extends JFrame {
     /**
      * 初始化游戏界面
      */
-    public MainWindow() {
+    @Autowired
+    public MainWindow(GameController gameController, GameNowData gameNowData, ViewComponent viewComponent) {
         initComponents();
         //开启间隔1s的定时任务
         new Timer(1000, new TimerListener()).start();
+
+        this.gameController = gameController;
+        this.gameNowData = gameNowData;
+        this.viewComponent = viewComponent;
     }
 
     /**
@@ -683,7 +684,7 @@ public class MainWindow extends JFrame {
         ((CardLayout) mainPanel.getLayout()).show(mainPanel, "gameCard");
 
         //预加载数据
-        mineController.preLoadData();
+        gameController.preLoadData();
     }
 
     /**
@@ -693,8 +694,8 @@ public class MainWindow extends JFrame {
         ((CardLayout) mainPanel.getLayout()).show(mainPanel, "setCard");
 
         //设置显示默认的模式和设置
-        mineController.setDefaultModel();
-        mineController.showNowOtherSetting();
+        gameController.setDefaultModel();
+        gameController.showNowOtherSetting();
     }
 
     /**
@@ -710,7 +711,7 @@ public class MainWindow extends JFrame {
      * @param e 事件源
      */
     private void changeModelActionPerformed(ActionEvent e) {
-        mineController.changeModel(((JRadioButtonMenuItem) e.getSource()).getText());
+        gameController.changeModel(((JRadioButtonMenuItem) e.getSource()).getText());
     }
 
     /**
@@ -718,7 +719,7 @@ public class MainWindow extends JFrame {
      */
     private void reloadLabelMouseClicked() {
         //若还未加载数据，则无法进行重新创建新的游戏
-        if (mineController.reloadGameData(gameNowData)) {
+        if (gameController.reloadGameData(gameNowData)) {
             return;
         }
 
@@ -732,23 +733,23 @@ public class MainWindow extends JFrame {
     private void loadActionPerformed() {
         //加载数据
         //扫雷面板初始化
-        final MineModel nowMineModel = mineController.getNowMineModel();
+        final MineModel nowMineModel = gameController.getNowMineModel();
         buttonsPanel.removeAll();
         buttonsPanel.setLayout(new GridLayout(nowMineModel.getRow(), nowMineModel.getColumn()));
 
         //创建扫雷按钮组并添加到面板中
-        mineController.newMineViewButtons();
-        mineController.addButtonsToPanel(gameNowData.getButtons());
+        gameController.newMineViewButtons();
+        gameController.addButtonsToPanel(gameNowData.getButtons());
 
         //绘制扫雷按钮组面板
         buttonsPanel.updateUI();
         buttonsPanel.repaint();
 
         //设置窗口合适大小
-        mineController.setWindowSize(this, Toolkit.getDefaultToolkit().getScreenSize());
+        gameController.setWindowSize(this, Toolkit.getDefaultToolkit().getScreenSize());
 
         //设置按钮为默认的图片
-        mineController.setMineJButtonDefaultIcon();
+        gameController.setMineJButtonDefaultIcon();
 
         //将窗口定位到屏幕中心
         setLocationRelativeTo(null);
@@ -762,45 +763,45 @@ public class MainWindow extends JFrame {
      */
     private void cleanGameData() {
         //预加载数据
-        mineController.preLoadData();
+        gameController.preLoadData();
 
         //移除按钮监听器
-        mineController.removeButtonsListener();
+        gameController.removeButtonsListener();
 
         //动态显示经过的时间
-        mineController.showDynamicTime();
+        gameController.showDynamicTime();
 
         //初始化剩余的地雷数
-        mineController.initRemainingMineNumberLabel();
+        gameController.initRemainingMineNumberLabel();
 
         //初始化游戏当前数据
         gameNowData.setInitStatus();
 
         //添加按钮监听器
-        mineController.addButtonsMouseListener();
+        gameController.addButtonsMouseListener();
 
         //设置默认的表情
-        mineController.setDefaultExpression();
+        gameController.setDefaultExpression();
 
         //改变按钮的大小
-        mineController.changeButtonsIconSize();
+        gameController.changeButtonsIconSize();
 
         //预加载数据
-        mineController.preLoadData();
+        gameController.preLoadData();
     }
 
     /**
      * 保存设置的数据
      */
     private void saveButtonActionPerformed() {
-        mineController.saveSettingData();
+        gameController.saveSettingData();
     }
 
     /**
      * 显示排行榜
      */
     private void showLeaderboardActionPerformed() {
-        mineController.showLeaderboard();
+        gameController.showLeaderboard();
         ((CardLayout) mainPanel.getLayout()).show(mainPanel, "card5");
     }
 
@@ -822,11 +823,11 @@ public class MainWindow extends JFrame {
 
             //左键为打开区块
             if (e.getButton() == MouseEvent.BUTTON1) {
-                mineController.openSpace(gameNowData);
+                gameController.openSpace(gameNowData);
             }
             //右键为设置旗帜
             else if (e.getButton() == MouseEvent.BUTTON3) {
-                mineController.setFlag();
+                gameController.setFlag();
             }
         }
     }
@@ -854,7 +855,7 @@ public class MainWindow extends JFrame {
             //若按钮组不为空且按钮的大小与初始化小不符
             if (buttons != null && !buttons[0][0].getSize().equals(dimension)) {
                 //刷新按钮图片
-                mineController.changeButtonsIconSize();
+                gameController.changeButtonsIconSize();
                 dimension = buttons[0][0].getSize();
             }
         }

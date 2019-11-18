@@ -1,9 +1,13 @@
 package com.service.impl;
 
-import com.dao.MineDao;
-import com.domain.*;
+import com.dao.GamePropertiesDao;
+import com.domain.GameNowData;
+import com.domain.GameOverDialogData;
+import com.domain.MineModel;
 import com.mapper.MineSweepingGameDataMapper;
 import com.mapper.MineSweepingModelDataMapper;
+import com.pojo.MineSweepingGameData;
+import com.pojo.MineSweepingModelData;
 import com.service.MineSweepingGameDataService;
 import com.utils.BaseHolder;
 import com.utils.Information;
@@ -23,8 +27,11 @@ import java.util.LongSummaryStatistics;
  * 返回数据给控制层
  */
 @Service("mineSweepingGameData")
-@SuppressWarnings("all")
 public class MineSweepingGameDataServiceImpl implements MineSweepingGameDataService {
+    /**
+     * dao层对象
+     */
+    private final GamePropertiesDao mineDao;
     /**
      * mybatis控制扫雷游戏数据的持久层对象
      */
@@ -35,11 +42,14 @@ public class MineSweepingGameDataServiceImpl implements MineSweepingGameDataServ
      */
     @Resource
     private MineSweepingModelDataMapper mineSweepingModelDataMapper;
+
     /**
-     * dao层对象
+     * 注入成员变量
      */
     @Autowired
-    private MineDao mineDao;
+    public MineSweepingGameDataServiceImpl(GamePropertiesDao mineDao) {
+        this.mineDao = mineDao;
+    }
 
     /**
      * 查找所有模式用时最短的扫雷游戏数据
@@ -62,7 +72,6 @@ public class MineSweepingGameDataServiceImpl implements MineSweepingGameDataServ
      *
      * @param gameNowData  游戏当前数据
      * @param nowMineModel 当前扫雷模式
-     *
      * @return 扫雷游戏数据
      */
     @Override
@@ -113,7 +122,6 @@ public class MineSweepingGameDataServiceImpl implements MineSweepingGameDataServ
      * 根据扫雷游戏数据创建对话框数据
      *
      * @param mineSweepingGameData 扫雷游戏数据
-     *
      * @return 游戏结束对话框数据
      */
     @Override
@@ -170,7 +178,6 @@ public class MineSweepingGameDataServiceImpl implements MineSweepingGameDataServ
      *
      * @param playerName 玩家名称
      * @param modelName  扫雷模式名称
-     *
      * @return 扫雷游戏数据集合
      */
     @Override

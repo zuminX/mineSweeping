@@ -1,9 +1,10 @@
 package com.service.impl;
 
-import com.dao.MineDao;
+import com.dao.GamePropertiesDao;
 import com.domain.*;
-import com.service.MineService;
+import com.service.GameDataService;
 import com.utils.Information;
+import com.utils.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -21,24 +22,20 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * 调用dao层获得扫雷数据
  * 返回数据给控制层
  */
-@Service("mineService")
-@SuppressWarnings("all")
-public class MineServiceImpl implements MineService {
+@Service("gameDataService")
+public class GameDataServiceImpl implements GameDataService {
     /**
      * dao层对象
      */
-    @Autowired
-    private MineDao mineDao;
+    private final GamePropertiesDao mineDao;
     /**
      * 视图组件
      */
-    @Autowired
-    private ViewComponent viewComponent;
+    private final ViewComponent viewComponent;
     /**
      * 游戏当前数据
      */
-    @Autowired
-    private GameNowData gameNowData;
+    private final GameNowData gameNowData;
     /**
      * 扫雷游戏的所有模式
      */
@@ -57,9 +54,15 @@ public class MineServiceImpl implements MineService {
     private Random random;
 
     /**
+     * 注入成员变量
      * 初始化随机对象，预加载数据
      */
-    public MineServiceImpl() {
+    @Autowired
+    public GameDataServiceImpl(GamePropertiesDao mineDao, ViewComponent viewComponent, GameNowData gameNowData) {
+        this.mineDao = mineDao;
+        this.viewComponent = viewComponent;
+        this.gameNowData = gameNowData;
+
         random = new Random();
         preLoadData();
     }
@@ -68,7 +71,6 @@ public class MineServiceImpl implements MineService {
      * 根据名称改变当前扫雷模式
      *
      * @param modelName 模式名称
-     *
      * @return false 没有发生异常；null 发生异常
      */
     @Override
@@ -234,7 +236,6 @@ public class MineServiceImpl implements MineService {
      * 创建地雷数据
      *
      * @param ignorePoint 忽略的点
-     *
      * @return 地雷点的集合
      */
     private HashSet<Point> createMineData(Point ignorePoint) {
@@ -261,7 +262,6 @@ public class MineServiceImpl implements MineService {
      *
      * @param mineModel 扫雷模式
      * @param mineData  地雷数据
-     *
      * @return 每个点的数据
      */
     private int[][] findAllSpaceAroundMineNumber(MineModel mineModel, Set<Point> mineData) {
@@ -285,7 +285,6 @@ public class MineServiceImpl implements MineService {
      * @param row      行数
      * @param column   列数
      * @param mineData 地雷数据
-     *
      * @return 地雷数
      */
     private int findAroundMineNumber(int row, int column, Set<Point> mineData) {
@@ -319,7 +318,6 @@ public class MineServiceImpl implements MineService {
      * 创建新的地雷数据
      *
      * @param ignorePoint 忽略的点
-     *
      * @return 地雷数据
      */
     private MineData newMineData(Point ignorePoint) {

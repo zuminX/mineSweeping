@@ -13,7 +13,7 @@ import java.awt.*;
  * 接收视图层的数据,数据传递给业务层
  * 接受业务层返回的数据并返回给视图层
  */
-public interface MineController {
+public interface GameController {
 
     /**
      * 改变当前扫雷模式
@@ -68,7 +68,6 @@ public interface MineController {
      * 重新加载当前游戏的数据
      *
      * @param gameNowData 扫雷当前数据对象
-     *
      * @return 重新加载失败->true 重新加载成功->false
      */
     boolean reloadGameData(GameNowData gameNowData);

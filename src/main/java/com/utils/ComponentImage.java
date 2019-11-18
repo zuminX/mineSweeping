@@ -78,9 +78,7 @@ public class ComponentImage {
      * 获取指定文件路径下的缓冲图像
      *
      * @param path 文件路径
-     *
      * @return 缓冲图像
-     *
      * @throws IOException I/O流异常
      */
     private static BufferedImage getIconBufferImage(String path) throws IOException {
@@ -92,7 +90,6 @@ public class ComponentImage {
      *
      * @param bufferedImage 缓冲图像
      * @param jComponent    组件
-     *
      * @return 图像
      */
     public static ImageIcon getGameImageIcon(BufferedImage bufferedImage, JComponent jComponent) {
@@ -104,7 +101,6 @@ public class ComponentImage {
      *
      * @param bufferedImage 缓冲图像
      * @param dimension     大小
-     *
      * @return 图像
      */
     public static ImageIcon getGameImageIcon(BufferedImage bufferedImage, Dimension dimension) {

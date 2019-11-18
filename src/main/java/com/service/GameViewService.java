@@ -3,7 +3,7 @@ package com.service;
 import com.domain.GameOverDialogData;
 import com.domain.MineJButton;
 import com.domain.MineModel;
-import com.domain.MineSweepingGameData;
+import com.pojo.MineSweepingGameData;
 import com.view.MainWindow;
 
 import java.awt.*;
@@ -13,7 +13,7 @@ import java.awt.*;
  * 接收控制层的数据
  * 返回数据给控制层
  */
-public interface ViewService {
+public interface GameViewService {
     /**
      * 根据扫雷模式设置文本框的编辑性
      *

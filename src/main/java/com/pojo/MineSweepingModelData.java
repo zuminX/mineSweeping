@@ -1,4 +1,4 @@
-package com.domain;
+package com.pojo;
 
 import lombok.Data;
 
@@ -44,7 +44,6 @@ public class MineSweepingModelData implements Serializable {
      * 判断两个扫雷模式是否相等
      *
      * @param o 判断对象
-     *
      * @return 相等返回true，不等返回false
      */
     @Override

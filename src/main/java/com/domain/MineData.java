@@ -1,5 +1,6 @@
 package com.domain;
 
+import com.utils.Point;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package com.domain;
+package com.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

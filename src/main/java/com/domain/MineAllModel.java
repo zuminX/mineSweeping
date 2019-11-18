@@ -56,7 +56,6 @@ public class MineAllModel {
      * 给定模式名称获取该模式的行数、列数、地雷数
      *
      * @param modelName 模式名称
-     *
      * @return 行数、列数、地雷数
      */
     private Integer[] getData(String modelName) {
@@ -90,7 +89,6 @@ public class MineAllModel {
      *
      * @param modelNamePro 该模式在配置文件的名字
      * @param modelName    该模式的名字
-     *
      * @return 扫雷模式
      */
     @Nullable
