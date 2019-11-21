@@ -54,4 +54,13 @@ public class GameNowData {
     public boolean isWin() {
         return space - mineNumber == openSpace;
     }
+
+    /**
+     * 判断当前游戏是否结束
+     *
+     * @return 游戏结束:true 游戏未结束false
+     */
+    public boolean isEnd() {
+        return isWin() || isFail();
+    }
 }

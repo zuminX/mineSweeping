@@ -8,11 +8,15 @@ import com.service.GameViewService;
 import com.service.MineSweepingGameDataService;
 import com.utils.BaseHolder;
 import com.utils.Information;
+import com.utils.Point;
 import com.view.MainWindow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.awt.*;
+
+import static com.utils.Point.positionI;
+import static com.utils.Point.positionJ;
 
 /**
  * 控制层
@@ -266,6 +270,36 @@ public class GameControllerImpl implements GameController {
     @Override
     public void changeButtonsIconSize() {
         gameViewService.changeButtonsIconSize();
+    }
+
+    /**
+     * 打开数字周围的区块
+     *
+     * @param doubleClickButton 双击的按钮
+     * @param gameNowData       游戏当前数据
+     */
+    @Override
+    public void openNumberAroundSpace(MineJButton doubleClickButton, GameNowData gameNowData) {
+        final ViewComponent viewComponent = BaseHolder.getBean("viewComponent", ViewComponent.class);
+        final MineJButton[][] mineViewButtons = gameNowData.getButtons();
+        final Point point = doubleClickButton.getPoint();
+        //打开数字周围3x3区块（不包括自身）
+        for (int index = 0; index < 8; index++) {
+            int i = point.getI() + positionI[index];
+            int j = point.getJ() + positionJ[index];
+            //越界或为旗帜或已点击过,跳过该点
+            if (i >= mineViewButtons.length || i < 0 || j >= mineViewButtons[i].length || j < 0 || mineViewButtons[i][j].isFlag() ||
+                (mineViewButtons[i][j].getStatus() != MineJButton.HIDE_SPACE && mineViewButtons[i][j].getStatus() != MineJButton.MINE)) {
+                continue;
+            }
+            //游戏结束，结束打开区块
+            if (gameNowData.isEnd()) {
+                return;
+            }
+            //打开该区块
+            viewComponent.setNowClickButton(mineViewButtons[i][j]);
+            openSpace(gameNowData);
+        }
     }
 
 }

@@ -4,7 +4,7 @@ import com.domain.MineModel;
 import com.utils.Point;
 
 /**
- * 扫雷业务层的接口
+ * 扫雷数据业务层的接口
  * 接收控制层的数据
  * 调用dao层获得扫雷数据
  * 返回数据给控制层

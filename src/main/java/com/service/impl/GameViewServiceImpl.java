@@ -20,8 +20,11 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 
+import static com.utils.Point.positionI;
+import static com.utils.Point.positionJ;
+
 /**
- * 处理扫雷页面的业务层
+ * 扫雷页面的业务层
  * 接收控制层的数据
  * 返回数据给控制层
  */
@@ -329,7 +332,7 @@ public class GameViewServiceImpl implements GameViewService {
     @Override
     public void addButtonsToPanel(MineJButton[][] buttons) {
         JPanel buttonsPanel = viewComponent.getButtonsPanel();
-        Arrays.stream(buttons).flatMap(Arrays::stream).forEach(button -> buttonsPanel.add(button));
+        Arrays.stream(buttons).flatMap(Arrays::stream).forEach(buttonsPanel::add);
     }
 
     /**
@@ -346,8 +349,12 @@ public class GameViewServiceImpl implements GameViewService {
      */
     @Override
     public void removeButtonsListener() {
-        MouseListener listener = BaseHolder.getBean("mouseListener");
-        Arrays.stream(gameNowData.getButtons()).flatMap(Arrays::stream).forEach(button -> button.removeMouseListener(listener));
+        final MouseListener mouseListener = BaseHolder.getBean("mouseListener", MouseListener.class);
+        final MouseListener numberMouseListener = BaseHolder.getBean("numberMouseListener", MouseListener.class);
+        Arrays.stream(gameNowData.getButtons()).flatMap(Arrays::stream).forEach(button -> {
+            button.removeMouseListener(mouseListener);
+            button.removeMouseListener(numberMouseListener);
+        });
 
     }
 
@@ -442,10 +449,15 @@ public class GameViewServiceImpl implements GameViewService {
         button.setStatus(MineJButton.DISPLAY_SPACE);
         //移除按钮的监听器
         removeButtonListener(button);
+
+        //若为数字区块，则添加双击左键监听
+        if (button.getData() > 0) {
+            button.addMouseListener(BaseHolder.getBean("numberMouseListener", MainWindow.NumberButtonMouseProcessor.class));
+        }
     }
 
     /**
-     * 打开该区块周围的空地
+     * 打开该区块周围的空白区块
      *
      * @param button 按钮
      */
@@ -453,35 +465,35 @@ public class GameViewServiceImpl implements GameViewService {
         //获取该按钮的位置
         Point point = button.getPoint();
         //搜索周围3x3区块（不包括自身）
-        for (int i = point.getI() - 1; i <= point.getI() + 1 && i < mineViewButtons.length; i++) {
-            if (i < 0) {
+        for (int index = 0; index < 8; index++) {
+            int i = point.getI() + positionI[index];
+            int j = point.getJ() + positionJ[index];
+            //越界
+            if (i >= mineViewButtons.length || i < 0 || j >= mineViewButtons[i].length || j < 0) {
                 continue;
             }
-            for (int j = point.getJ() - 1; j <= point.getJ() + 1 && j < mineViewButtons[i].length; j++) {
-                if (j < 0) {
-                    continue;
-                }
-                //当前点的按钮
-                MineJButton mineJButton = mineViewButtons[i][j];
-                int data = mineJButton.getData();
 
-                //若该按钮的状态不为显示状态且不为旗帜
-                if (mineJButton.getStatus() != MineJButton.DISPLAY_SPACE && !mineJButton.isFlag()) {
-                    //设置按钮为显示状态
-                    setButtonDisPlayStatus(mineJButton);
+            //当前点的按钮
+            MineJButton mineJButton = mineViewButtons[i][j];
+            int data = mineJButton.getData();
 
-                    //若该区块周围没有地雷，则递归打开该区块
-                    if (data == 0) {
-                        openAroundSpace(mineJButton, mineViewButtons);
-                        //否则设置该区块周围的地雷数
-                    } else {
-                        setButtonIcon(mineJButton, ComponentImage.numberBufferedImage[data - 1]);
-                    }
-                    //打开的区块数加一
-                    gameNowData.setOpenSpace(gameNowData.getOpenSpace() + 1);
+            //若该按钮的状态不为显示状态且不为旗帜
+            if (mineJButton.getStatus() != MineJButton.DISPLAY_SPACE && !mineJButton.isFlag()) {
+                //设置按钮为显示状态
+                setButtonDisPlayStatus(mineJButton);
+
+                //若该区块周围没有地雷，则递归打开该区块
+                if (data == 0) {
+                    openAroundSpace(mineJButton, mineViewButtons);
+                    //否则设置该区块周围的地雷数
+                } else {
+                    setButtonIcon(mineJButton, ComponentImage.numberBufferedImage[data - 1]);
                 }
+                //打开的区块数加一
+                gameNowData.setOpenSpace(gameNowData.getOpenSpace() + 1);
             }
         }
+
     }
 
     /**

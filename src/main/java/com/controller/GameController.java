@@ -128,4 +128,12 @@ public interface GameController {
      * 改变按钮的图片大小
      */
     void changeButtonsIconSize();
+
+    /**
+     * 打开数字周围方块
+     *
+     * @param doubleClickButton 双击的按钮
+     * @param gameNowData       游戏当前数据
+     */
+    void openNumberAroundSpace(MineJButton doubleClickButton, GameNowData gameNowData);
 }

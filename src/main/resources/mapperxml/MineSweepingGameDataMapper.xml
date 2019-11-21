@@ -9,7 +9,6 @@
             model_id
     </sql>
     <resultMap id="BaseResultMap" type="com.pojo.MineSweepingGameData">
-        <!--@mbg.generated-->
         <!--@Table mine_sweeping_game_data-->
         <id column="data_id" jdbcType="INTEGER" property="dataId"/>
         <result column="player_name" jdbcType="VARCHAR" property="playerName"/>
@@ -29,7 +28,6 @@
             keyProperty="dataId"
             parameterType="com.pojo.MineSweepingGameData"
             useGeneratedKeys="true">
-        <!--@mbg.generated-->
         insert into mine_sweeping_game_data (player_name, `time`, is_win, model_id
         )
         values (#{playerName,jdbcType=VARCHAR}, #{time,jdbcType=BIGINT}, #{isWin,jdbcType=TINYINT},

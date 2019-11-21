@@ -9,7 +9,7 @@ import com.view.MainWindow;
 import java.awt.*;
 
 /**
- * 处理扫雷页面的业务层的接口
+ * 扫雷页面的业务层的接口
  * 接收控制层的数据
  * 返回数据给控制层
  */

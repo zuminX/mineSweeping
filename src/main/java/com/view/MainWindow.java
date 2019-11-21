@@ -27,7 +27,6 @@ import java.awt.event.MouseEvent;
  *
  * @author zumin
  */
-
 @Component("viewWindow")
 public class MainWindow extends JFrame {
     /**
@@ -53,6 +52,7 @@ public class MainWindow extends JFrame {
 
     /**
      * 初始化游戏界面
+     * 注入成员变量
      */
     @Autowired
     public MainWindow(GameController gameController, GameNowData gameNowData, ViewComponent viewComponent) {
@@ -828,6 +828,28 @@ public class MainWindow extends JFrame {
             //右键为设置旗帜
             else if (e.getButton() == MouseEvent.BUTTON3) {
                 gameController.setFlag();
+            }
+        }
+    }
+
+    /**
+     * 数字按钮监听器
+     */
+    @Component("numberMouseListener")
+    public class NumberButtonMouseProcessor extends MouseAdapter {
+
+        /**
+         * 监听数字按钮双击左键事件
+         *
+         * @param e 事件源
+         */
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            //双击按钮
+            final MineJButton doubleClickButton = (MineJButton) e.getSource();
+            //双击左键打开数字周围方块
+            if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
+                gameController.openNumberAroundSpace(doubleClickButton, gameNowData);
             }
         }
     }

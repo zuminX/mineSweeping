@@ -12,7 +12,6 @@ import javax.swing.*;
  *
  * @author zumin
  */
-
 public class MainApp {
 
     /**

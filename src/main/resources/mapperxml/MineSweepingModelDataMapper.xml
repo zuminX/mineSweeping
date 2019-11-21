@@ -9,7 +9,6 @@
             model_name
     </sql>
     <resultMap id="BaseResultMap" type="com.pojo.MineSweepingModelData">
-        <!--@mbg.generated-->
         <!--@Table mine_sweeping_model_data-->
         <id column="model_id" jdbcType="INTEGER" property="modelId"/>
         <result column="row" jdbcType="INTEGER" property="row"/>
@@ -30,7 +29,6 @@
             keyProperty="modelId"
             parameterType="com.pojo.MineSweepingModelData"
             useGeneratedKeys="true">
-        <!--@mbg.generated-->
         insert into mine_sweeping_model_data (`row`, `column`, mine_number,
         model_name)
         values (#{row,jdbcType=INTEGER}, #{column,jdbcType=INTEGER}, #{mineNumber,jdbcType=INTEGER},
