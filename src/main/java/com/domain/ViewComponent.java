@@ -1,6 +1,7 @@
 package com.domain;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
@@ -9,7 +10,8 @@ import javax.swing.*;
  * 封装显示的组件
  */
 @Component("viewComponent")
-@Data
+@Getter
+@Setter
 public class ViewComponent {
     /**
      * 当前点击的按钮

@@ -4,6 +4,7 @@ import com.domain.GameOverDialogData;
 import com.domain.MineJButton;
 import com.domain.MineModel;
 import com.pojo.MineSweepingGameData;
+import com.utils.Point;
 import com.view.MainWindow;
 
 import java.awt.*;
@@ -147,4 +148,13 @@ public interface GameViewService {
      * 改变按钮的图片大小
      */
     void changeButtonsIconSize();
+
+    /**
+     * 设置下一个点击按钮
+     *
+     * @param point 点
+     * @param index 下标
+     * @return 结束设置下一个点击按钮返回false，继续则返回true
+     */
+    Boolean setNextClickButton(Point point, int index);
 }

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
+import java.util.function.Consumer;
 
 import static com.utils.Point.positionI;
 import static com.utils.Point.positionJ;
@@ -85,7 +86,7 @@ public class GameViewServiceImpl implements GameViewService {
      */
     @Override
     public void setModelDataText(MineModel model) {
-        DecimalFormat format = BaseHolder.getBean("highDecimalFormat", DecimalFormat.class);
+        final var format = BaseHolder.getBean("highDecimalFormat", DecimalFormat.class);
         viewComponent.getRowTextField().setText(String.valueOf(model.getRow()));
         viewComponent.getColumnTextField().setText(String.valueOf(model.getColumn()));
         viewComponent.getMineNumberTextField().setText(String.valueOf(model.getMineNumber()));
@@ -155,21 +156,23 @@ public class GameViewServiceImpl implements GameViewService {
      */
     @Override
     public void loadRemainderButtonsIcon() {
-        for (MineJButton[] button : gameNowData.getButtons()) {
-            for (MineJButton b : button) {
-                int status = b.getStatus();
-                //如果该区块是地雷且插了旗帜，则显示该雷被扫除的图片
-                if (status == MineJButton.MINE && b.isFlag()) {
-                    setButtonIcon(b, ComponentImage.sweepMineBufferedImage);
-                    //如果该区块是地雷爆炸，则显示地雷爆炸的图片
-                } else if (status == MineJButton.EXPLODE) {
+        forEachAllMineJButton(b -> {
+            switch (b.getStatus()) {
+                case MineJButton.MINE:
+                    //如果该区块是地雷且插了旗帜，则显示该雷被扫除的图片
+                    if (b.isFlag()) {
+                        setButtonIcon(b, ComponentImage.sweepMineBufferedImage);
+                        //如果该区块是地雷，则显示地雷的图片
+                    } else {
+                        setButtonIcon(b, ComponentImage.mineBufferedImage);
+                    }
+                    break;
+                //如果该区块是地雷爆炸，则显示地雷爆炸的图片
+                case MineJButton.EXPLODE:
                     setButtonIcon(b, ComponentImage.explodeMineBufferedImage);
-                    //如果该区块是地雷，则显示地雷的图片
-                } else if (status == MineJButton.MINE) {
-                    setButtonIcon(b, ComponentImage.mineBufferedImage);
-                }
+                    break;
             }
-        }
+        });
     }
 
     /**
@@ -242,16 +245,14 @@ public class GameViewServiceImpl implements GameViewService {
      */
     @Override
     public void cleanViewData() {
-        for (MineJButton[] button : gameNowData.getButtons()) {
-            for (MineJButton mineJButton : button) {
-                //设置隐藏区块图片
-                setButtonIcon(mineJButton, ComponentImage.hideSpaceMineBufferedImage);
-                //设置为非旗帜
-                mineJButton.setFlag(false);
-                //重新设置扫雷按钮的状态
-                mineJButton.setStatus(mineJButton.getData() == -1 ? MineJButton.MINE : MineJButton.HIDE_SPACE);
-            }
-        }
+        forEachAllMineJButton(button -> {
+            //设置隐藏区块图片
+            setButtonIcon(button, ComponentImage.hideSpaceMineBufferedImage);
+            //设置为非旗帜
+            button.setFlag(false);
+            //重新设置扫雷按钮的状态
+            button.setStatus(button.getData() == -1 ? MineJButton.MINE : MineJButton.HIDE_SPACE);
+        });
     }
 
     /**
@@ -331,8 +332,8 @@ public class GameViewServiceImpl implements GameViewService {
      */
     @Override
     public void addButtonsToPanel(MineJButton[][] buttons) {
-        JPanel buttonsPanel = viewComponent.getButtonsPanel();
-        Arrays.stream(buttons).flatMap(Arrays::stream).forEach(buttonsPanel::add);
+        final JPanel buttonsPanel = viewComponent.getButtonsPanel();
+        forEachAllMineJButton(buttonsPanel::add);
     }
 
     /**
@@ -340,8 +341,8 @@ public class GameViewServiceImpl implements GameViewService {
      */
     @Override
     public void addButtonsMouseListener() {
-        MouseListener listener = BaseHolder.getBean("mouseListener");
-        Arrays.stream(gameNowData.getButtons()).flatMap(Arrays::stream).forEach(button -> button.addMouseListener(listener));
+        final var listener = BaseHolder.getBean("mouseListener", MouseListener.class);
+        forEachAllMineJButton(button -> button.addMouseListener(listener));
     }
 
     /**
@@ -349,13 +350,13 @@ public class GameViewServiceImpl implements GameViewService {
      */
     @Override
     public void removeButtonsListener() {
-        final MouseListener mouseListener = BaseHolder.getBean("mouseListener", MouseListener.class);
-        final MouseListener numberMouseListener = BaseHolder.getBean("numberMouseListener", MouseListener.class);
-        Arrays.stream(gameNowData.getButtons()).flatMap(Arrays::stream).forEach(button -> {
+        final var mouseListener = BaseHolder.getBean("mouseListener", MouseListener.class);
+        final var numberMouseListener = BaseHolder.getBean("numberMouseListener", MouseListener.class);
+
+        forEachAllMineJButton(button -> {
             button.removeMouseListener(mouseListener);
             button.removeMouseListener(numberMouseListener);
         });
-
     }
 
     /**
@@ -417,9 +418,7 @@ public class GameViewServiceImpl implements GameViewService {
      */
     @Override
     public void setMineJButtonDefaultIcon() {
-        Arrays.stream(gameNowData.getButtons())
-                .flatMap(Arrays::stream)
-                .forEach(button -> setButtonIcon(button, ComponentImage.hideSpaceMineBufferedImage));
+        forEachAllMineJButton(button -> setButtonIcon(button, ComponentImage.hideSpaceMineBufferedImage));
     }
 
     /**
@@ -427,16 +426,33 @@ public class GameViewServiceImpl implements GameViewService {
      */
     @Override
     public void changeButtonsIconSize() {
-        Arrays.stream(gameNowData.getButtons()).flatMap(Arrays::stream).forEach(button -> setButtonIcon(button, button.getBufferedImage()));
+        forEachAllMineJButton(button -> setButtonIcon(button, button.getBufferedImage()));
     }
 
     /**
-     * 移除按钮的监听器
+     * 设置下一个点击按钮
      *
-     * @param button 按钮
+     * @param point 点
+     * @param index 下标
+     * @return 结束设置下一个点击按钮返回false，继续则返回true
      */
-    private void removeButtonListener(MineJButton button) {
-        button.removeMouseListener(BaseHolder.getBean("mouseListener"));
+    @Override
+    public Boolean setNextClickButton(Point point, int index) {
+        final MineJButton[][] mineViewButtons = gameNowData.getButtons();
+        int i = point.getI() + positionI[index];
+        int j = point.getJ() + positionJ[index];
+        //越界或为旗帜或已点击过,跳过该点
+        if (i >= mineViewButtons.length || i < 0 || j >= mineViewButtons[i].length || j < 0 || mineViewButtons[i][j].isFlag() ||
+            (mineViewButtons[i][j].getStatus() != MineJButton.HIDE_SPACE && mineViewButtons[i][j].getStatus() != MineJButton.MINE)) {
+            return false;
+        }
+        //游戏结束，结束打开区块
+        if (gameNowData.isEnd()) {
+            return false;
+        }
+        //设置该区块为点击状态
+        viewComponent.setNowClickButton(mineViewButtons[i][j]);
+        return true;
     }
 
     /**
@@ -448,7 +464,7 @@ public class GameViewServiceImpl implements GameViewService {
         setButtonIcon(button, ComponentImage.displaySpaceMineBufferedImage);
         button.setStatus(MineJButton.DISPLAY_SPACE);
         //移除按钮的监听器
-        removeButtonListener(button);
+        button.removeMouseListener(BaseHolder.getBean("mouseListener"));
 
         //若为数字区块，则添加双击左键监听
         if (button.getData() > 0) {
@@ -497,6 +513,15 @@ public class GameViewServiceImpl implements GameViewService {
     }
 
     /**
+     * 遍历所有地雷按钮
+     *
+     * @param action 消费者方法
+     */
+    private void forEachAllMineJButton(Consumer<? super MineJButton> action) {
+        Arrays.stream(gameNowData.getButtons()).flatMap(Arrays::stream).forEach(action);
+    }
+
+    /**
      * 动态显示当前时间的类
      */
     private class DynamicTime implements Runnable {
@@ -541,7 +566,7 @@ public class GameViewServiceImpl implements GameViewService {
             while (true) {
                 try {
                     //判断是否被中断
-                    if (gameNowData.isWin() || gameNowData.isFail()) {
+                    if (gameNowData.isEnd()) {
                         //重新创建一个门闩，并进行等待
                         countDownLatch = new CountDownLatch(1);
                         countDownLatch.await();
